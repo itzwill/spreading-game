@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://dtrg33yu34hnv"]
+
+[ext_resource type="Script" uid="uid://tfypuwwbexn7" path="res://mob/mob_spawner.gd" id="1_fbqtq"]
+[ext_resource type="PackedScene" uid="uid://c8tu1jr3vfj10" path="res://mob/zombie.tscn" id="2_48w23"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jenia"]
+
+[node name="MobSpawner" type="Node3D" unique_id=1618640347]
+script = ExtResource("1_fbqtq")
+mob_to_spawn = ExtResource("2_48w23")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1709885815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_jenia")
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=643103381]
+unique_name_in_owner = true
+
+[node name="Timer" type="Timer" parent="." unique_id=1197449669]
+unique_name_in_owner = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

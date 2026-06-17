@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://vuk65kxbhybw"]
+
+[ext_resource type="PackedScene" uid="uid://bce7fqead43d2" path="res://player/player.tscn" id="1_qljgq"]
+[ext_resource type="PackedScene" uid="uid://bxbkqqtuq4e8a" path="res://mob/navigating_mob.tscn" id="2_eu1sm"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_8s5sm"]
+vertices = PackedVector3Array(-9.5, 0.5, -9.5, -9.5, 0.5, 9.5, 9.5, 0.5, 9.5, 9.5, 0.5, -9.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="Environment" id="Environment_eu1sm"]
+background_mode = 1
+background_color = Color(0.671281, 0.91150653, 0.9999998, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.815625, 0.702063, 0.54125, 1)
+ambient_light_sky_contribution = 0.31
+ambient_light_energy = 0.0
+tonemap_mode = 2
+tonemap_exposure = 1.05
+tonemap_white = 0.95
+ssao_intensity = 1.0
+glow_normalized = true
+glow_intensity = 0.2
+fog_enabled = true
+fog_light_color = Color(0.5785249, 0.8009174, 0.9999997, 1)
+fog_density = 0.002
+fog_height = 0.52
+fog_height_density = 0.1319
+volumetric_fog_density = 0.3186
+volumetric_fog_albedo = Color(0.26605457, 0.26605457, 0.26605454, 1)
+volumetric_fog_emission = Color(0.0431373, 0.0431373, 0.0431373, 1)
+
+[node name="Game" type="NavigationRegion3D" unique_id=1889208390]
+navigation_mesh = SubResource("NavigationMesh_8s5sm")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1912051008]
+transform = Transform3D(20, 0, 0, 0, 1, 0, 0, 0, 20, 0, -0.5, 0)
+use_collision = true
+
+[node name="Player" parent="." unique_id=1151308884 instance=ExtResource("1_qljgq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, -1)
+
+[node name="NavigatingMob" parent="." unique_id=1587897704 instance=ExtResource("2_eu1sm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8484788, 0, -0.25672853)
+
+[node name="WorldEnvironment2" type="WorldEnvironment" parent="." unique_id=1370960358]
+environment = SubResource("Environment_eu1sm")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1982751179]
+transform = Transform3D(0.707107, -0.612373, 0.353553, 0, 0.5, 0.866026, -0.707107, -0.612373, 0.353553, 0, 10, 0)
+light_energy = 0.696
+shadow_enabled = true
+directional_shadow_max_distance = 40.0

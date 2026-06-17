@@ -1,0 +1,129 @@
+[gd_scene format=3 uid="uid://biytq2fb3efoh"]
+
+[ext_resource type="PackedScene" uid="uid://c54o7e1n6if07" path="res://mob/zombie/Zombie.glb" id="1_ej2of"]
+[ext_resource type="Script" uid="uid://bje2oanxplf4h" path="res://mob/zombie_model.gd" id="2_o2dhb"]
+
+[sub_resource type="AnimationNodeOneShot" id="AnimationNodeOneShot_o2dhb"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vstuv"]
+animation = &"HitReact"
+
+[sub_resource type="AnimationNodeOneShot" id="AnimationNodeOneShot_56071"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_e2ut2"]
+animation = &"Idle_Attack"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xccqw"]
+animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kycpr"]
+animation = &"Walk"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_o2dhb"]
+animation = &"Run_Arms"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_56071"]
+animation = &"Run"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_80un8"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_xccqw")
+blend_point_0/pos = 0.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_kycpr")
+blend_point_1/pos = 0.3
+blend_point_2/node = SubResource("AnimationNodeAnimation_o2dhb")
+blend_point_2/pos = 1.0
+blend_point_3/node = SubResource("AnimationNodeAnimation_56071")
+blend_point_3/pos = 0.6
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_lgr31"]
+graph_offset = Vector2(-666.2857, 134.85715)
+nodes/output/position = Vector2(605.7143, 320)
+nodes/locomotion/node = SubResource("AnimationNodeBlendSpace1D_80un8")
+nodes/locomotion/position = Vector2(-228.57143, 217.14285)
+nodes/AttackOneShot/node = SubResource("AnimationNodeOneShot_o2dhb")
+nodes/AttackOneShot/position = Vector2(68.57143, 262.85715)
+nodes/attack/node = SubResource("AnimationNodeAnimation_e2ut2")
+nodes/attack/position = Vector2(-228.57143, 422.85715)
+nodes/TakeDamage/node = SubResource("AnimationNodeAnimation_vstuv")
+nodes/TakeDamage/position = Vector2(171.42857, 617.1429)
+nodes/TakeDamageOneShot/node = SubResource("AnimationNodeOneShot_56071")
+nodes/TakeDamageOneShot/position = Vector2(331.42856, 274.2857)
+node_connections = [&"output", 0, &"TakeDamageOneShot", &"AttackOneShot", 0, &"locomotion", &"AttackOneShot", 1, &"attack", &"TakeDamageOneShot", 0, &"AttackOneShot", &"TakeDamageOneShot", 1, &"TakeDamage"]
+
+[node name="ZombieModel" unique_id=1029961563 instance=ExtResource("1_ej2of")]
+script = ExtResource("2_o2dhb")
+
+[node name="Skeleton3D" parent="RootNode/CharacterArmature" parent_id_path=PackedInt32Array(190255280) index="0" unique_id=1860693391]
+bones/2/position = Vector3(1.1338166e-05, 0.0037865634, 0.000882487)
+bones/5/rotation = Quaternion(0.4553991, -7.2662897e-07, 7.674327e-08, 0.8902874)
+bones/7/rotation = Quaternion(-0.3734842, -0.00025587014, 0.00010247194, 0.92763656)
+bones/11/rotation = Quaternion(-0.17166908, -0.024965016, -0.032399297, 0.98430526)
+bones/15/position = Vector3(0.00097201444, 0.00035614325, 0.00087814085)
+bones/15/rotation = Quaternion(-0.5908748, -0.068895385, -0.41443083, 0.6887435)
+bones/17/rotation = Quaternion(-0.08052537, 0.2531195, -0.23104966, 0.93598205)
+bones/29/position = Vector3(-0.00096528966, 0.00035614334, 0.000878142)
+bones/29/rotation = Quaternion(-0.59087473, 0.06889576, 0.4144312, 0.68874323)
+bones/31/rotation = Quaternion(-0.082643196, -0.2582565, 0.2252736, 0.93580216)
+bones/36/rotation = Quaternion(-0.036234785, 0.9571053, -0.082409546, -0.27540016)
+bones/39/rotation = Quaternion(-0.17996846, 0.15647887, -0.09289363, 0.96669364)
+bones/40/rotation = Quaternion(-0.07751695, -0.0027735173, 0.011679619, 0.9969188)
+bones/43/rotation = Quaternion(0.9457963, 0.007957869, 0.0028227188, 0.3246507)
+bones/44/rotation = Quaternion(0.59023964, 0.0059522693, 0.0078041404, 0.80716836)
+bones/45/rotation = Quaternion(0.9457963, -0.007958096, -0.0028221838, 0.32465076)
+bones/46/rotation = Quaternion(0.59023976, -0.0059522763, -0.0078041125, 0.8071683)
+
+[node name="Tongue5" parent="RootNode/CharacterArmature/Skeleton3D" index="1" unique_id=1367169277]
+transform = Transform3D(-0.97451097, -0.21444042, 0.06590089, 0.009871947, -0.3344633, -0.94235647, 0.22412089, -0.91768634, 0.32805538, -0.00012210775, -0.0037209368, 0.006672088)
+
+[node name="Eyelid_L" parent="RootNode/CharacterArmature/Skeleton3D" index="2" unique_id=1595140815]
+transform = Transform3D(0.9999999, 1.5551632e-07, 5.820766e-08, 6.362097e-08, -0.03536205, -0.9993744, -1.534354e-07, 0.9993743, -0.035362035, 0.0013045084, -0.0025375253, 0.009176536)
+
+[node name="Eyelid_R" parent="RootNode/CharacterArmature/Skeleton3D" index="3" unique_id=947276655]
+transform = Transform3D(0.9999999, 1.5541445e-07, 5.844049e-08, 6.373739e-08, -0.035362184, -0.99937433, -1.5333353e-07, 0.9993744, -0.035362154, -0.001304508, -0.0025375255, 0.009176536)
+
+[node name="Pinky3_L" parent="RootNode/CharacterArmature/Skeleton3D" index="4" unique_id=299179211]
+transform = Transform3D(-0.17264022, -0.95889264, 0.22521159, -0.9430156, 0.09487432, -0.3189364, 0.2844587, -0.26743922, -0.9206296, 0.0056953067, 0.0015245349, 0.0020677038)
+
+[node name="Middle3_L" parent="RootNode/CharacterArmature/Skeleton3D" index="5" unique_id=2139569771]
+transform = Transform3D(-0.20898332, -0.9289419, 0.30560255, -0.9007492, 0.061176553, -0.4300098, 0.3807583, -0.3651361, -0.849528, 0.005649782, 0.000848336, 0.0020583975)
+
+[node name="Index3_L" parent="RootNode/CharacterArmature/Skeleton3D" index="6" unique_id=1930723749]
+transform = Transform3D(-0.39107135, -0.7367664, 0.55157816, -0.81327367, -0.0039328337, -0.58186793, 0.43086982, -0.6761357, -0.59765416, 0.0054915273, 0.00014031286, 0.0023859555)
+
+[node name="Thumb2_L" parent="RootNode/CharacterArmature/Skeleton3D" index="7" unique_id=1499133991]
+transform = Transform3D(-0.8427906, -0.04141015, 0.5366459, -0.53101474, -0.09886331, -0.8415754, 0.087904155, -0.99423826, 0.061331782, 0.0037133931, 0.000427666, 0.0029496248)
+
+[node name="Pinky3_R" parent="RootNode/CharacterArmature/Skeleton3D" index="8" unique_id=1973252852]
+transform = Transform3D(-0.27830616, -0.3279742, -0.90276176, 0.93365794, 0.12824209, -0.33442134, 0.22545364, -0.9359414, 0.27052516, -0.00589494, 0.0017087838, 0.0021136282)
+
+[node name="Middle3_R" parent="RootNode/CharacterArmature/Skeleton3D" index="9" unique_id=493755820]
+transform = Transform3D(-0.43193978, -0.26699036, -0.86147773, 0.90165174, -0.15034282, -0.40548855, -0.021255672, -0.95189965, 0.30567092, -0.005827366, 0.0009376627, 0.0020872606)
+
+[node name="Index3_R" parent="RootNode/CharacterArmature/Skeleton3D" index="10" unique_id=418766364]
+transform = Transform3D(-0.52512217, -0.24566534, -0.81479746, 0.8312491, -0.35327423, -0.4292109, -0.18240479, -0.9026876, 0.3897212, -0.005465241, 0.00024012811, 0.00225794)
+
+[node name="Thumb2_R" parent="RootNode/CharacterArmature/Skeleton3D" index="11" unique_id=1526443702]
+transform = Transform3D(-0.6295068, -0.04661037, -0.7755957, 0.38632873, -0.8848452, -0.26038498, -0.6741449, -0.4635486, 0.5750225, -0.004556517, -1.88977e-05, 0.0032825775)
+
+[node name="LowerLeg_L" parent="RootNode/CharacterArmature/Skeleton3D" index="12" unique_id=39871123]
+transform = Transform3D(0.99992025, 0.008447696, 0.009407865, -0.012537207, 0.5658923, 0.8243879, 0.0016402514, -0.82443625, 0.5659537, 0.0014406611, -2.2282242e-05, 0.0019767578)
+
+[node name="LowerLeg_R" parent="RootNode/CharacterArmature/Skeleton3D" index="13" unique_id=226511583]
+transform = Transform3D(0.9999205, -0.008447964, -0.009408028, 0.012537484, 0.5658922, 0.82438755, -0.0016403993, -0.8244359, 0.5659537, -0.001440661, -2.2281893e-05, 0.001976759)
+
+[node name="AnimationPlayer" parent="." index="1" unique_id=980855217]
+unique_name_in_owner = true
+autoplay = &"Idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="." index="2" unique_id=1130469528]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/..")
+tree_root = SubResource("AnimationNodeBlendTree_lgr31")
+anim_player = NodePath("../AnimationPlayer")
+parameters/locomotion/blend_position = 0.0
+parameters/AttackOneShot/active = false
+parameters/AttackOneShot/internal_active = false
+parameters/AttackOneShot/request = 0
+parameters/TakeDamageOneShot/active = false
+parameters/TakeDamageOneShot/internal_active = false
+parameters/TakeDamageOneShot/request = 0

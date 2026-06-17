@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://c8tu1jr3vfj10"]
+
+[ext_resource type="PackedScene" uid="uid://biytq2fb3efoh" path="res://mob/zombie_model.tscn" id="1_anqwc"]
+[ext_resource type="Script" uid="uid://ctfmbylc7xdkd" path="res://mob/zombie.gd" id="1_rj5bg"]
+[ext_resource type="AudioStream" uid="uid://ckef6bmkyukyp" path="res://sounds/mob/zombie_take_damage.wav" id="3_j5nxc"]
+[ext_resource type="AudioStream" uid="uid://76gyun7ely8v" path="res://sounds/mob/zombie_death.wav" id="4_evr81"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rj5bg"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_j5nxc"]
+
+[node name="Zombie" type="RigidBody3D" unique_id=1500710432]
+gravity_scale = 0.0
+script = ExtResource("1_rj5bg")
+
+[node name="BodyCollisionShape" type="CollisionShape3D" parent="." unique_id=1275853273]
+unique_name_in_owner = true
+transform = Transform3D(0.5080959, 0, 0, 0, 0.5080959, 0, 0, 0, 0.5080959, 0, 0.5058806, -0.047229156)
+shape = SubResource("CapsuleShape3D_rj5bg")
+metadata/hit_location = "body"
+
+[node name="HeadCollisionShape" type="CollisionShape3D" parent="." unique_id=699462601]
+unique_name_in_owner = true
+transform = Transform3D(0.6225203, 0, 0, 0, 0.6225203, 0, 0, 0, 0.6225203, 0, 0.89426166, 0.14484319)
+shape = SubResource("SphereShape3D_j5nxc")
+metadata/hit_location = "head"
+
+[node name="ZombieModel" parent="." unique_id=1029961563 instance=ExtResource("1_anqwc")]
+unique_name_in_owner = true
+
+[node name="Timer" type="Timer" parent="." unique_id=527770891]
+unique_name_in_owner = true
+wait_time = 2.0
+
+[node name="HurtSound" type="AudioStreamPlayer3D" parent="." unique_id=1305974876]
+unique_name_in_owner = true
+stream = ExtResource("3_j5nxc")
+
+[node name="DeathSound" type="AudioStreamPlayer3D" parent="." unique_id=829746005]
+unique_name_in_owner = true
+stream = ExtResource("4_evr81")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
