@@ -28,6 +28,8 @@ const JUMP_VELOCITY = 4.5
 const MAX_HEALTH := 100
 const SHOTGUN_PELLETS := 5
 const SHOTGUN_SPREAD := 4.0 # degrees
+const REPAIR_RANGE := 3.0
+const REPAIR_RATE := 25.0
 
 #Reload params
 const FIRST_SHELL_DELAY := 0.4
@@ -68,6 +70,9 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, SPEED)
 
 	move_and_slide()
+	
+	if Input.is_action_pressed("repair"):
+		repair_facing_barrier(delta)
 	
 	if Input.is_action_pressed("shoot") and shoot_timer.is_stopped():
 		shoot_bullet()
@@ -112,6 +117,41 @@ func get_aim_direction() -> Vector3:
 		target_position = origin + direction * 1000.0
 
 	return bullet_origin_marker.global_position.direction_to(target_position)
+
+func repair_facing_barrier(delta: float) -> void:
+	var barrier = get_facing_barrier()
+	if barrier == null:
+		return
+
+	barrier.repair(REPAIR_RATE * delta)
+
+func get_facing_barrier() -> Node:
+	var camera = %Camera3D
+	var viewport_size = get_viewport().get_visible_rect().size
+	var screen_center = viewport_size * 0.5
+	var origin = camera.project_ray_origin(screen_center)
+	var direction = camera.project_ray_normal(screen_center)
+	var query = PhysicsRayQueryParameters3D.create(
+		origin,
+		origin + direction * REPAIR_RANGE
+	)
+
+	query.exclude = [self]
+	query.collide_with_areas = true
+
+	var result = get_world_3d().direct_space_state.intersect_ray(query)
+	if not result:
+		return null
+
+	return find_barrier(result.collider)
+
+func find_barrier(node: Node) -> Node:
+	while node:
+		if node.is_in_group("barriers"):
+			return node
+		node = node.get_parent()
+
+	return null
 
 func shoot_bullet():
 	if gun_ammo == 0:

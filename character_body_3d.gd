@@ -96,6 +96,9 @@ func can_attack_barrier() -> bool:
 	var barrier = find_barrier(collider)
 		
 	if barrier:
+		if barrier.has_method("is_blocking"):
+			return barrier.is_blocking()
+
 		return true
 
 	return false
