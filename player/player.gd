@@ -273,6 +273,23 @@ func take_damage(amount: int) -> void:
 	update_health.emit(health)
 	print("Player health:", health)
 
+func add_health(amount: int) -> bool:
+	if health >= MAX_HEALTH:
+		return false
+
+	health = min(health + amount, MAX_HEALTH)
+	update_health.emit(health)
+	print("Player health:", health)
+	return true
+
+func add_reserve_ammo(amount: int) -> bool:
+	if reserve_ammo >= MAX_RESERVE_AMMO:
+		return false
+
+	reserve_ammo = min(reserve_ammo + amount, MAX_RESERVE_AMMO)
+	emit_ammo_update()
+	return true
+
 func die() -> void:
 	if is_dead:
 		return

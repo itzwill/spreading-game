@@ -12,6 +12,9 @@
 [ext_resource type="PackedScene" uid="uid://bxbkqqtuq4e8a" path="res://mob/navigating_mob.tscn" id="7_c45uj"]
 [ext_resource type="PackedScene" uid="uid://cnvnyl05rhhve" path="res://HUD/HUD.tscn" id="8_70jqb"]
 [ext_resource type="PackedScene" uid="uid://cqe8fmh6bogyl" path="res://world-environments/world-objects/chest.tscn" id="10_kiuwd"]
+[ext_resource type="PackedScene" path="res://level/items/health_box_collectible.tscn" id="11_health"]
+[ext_resource type="PackedScene" path="res://level/items/shotgun_ammo_collectible.tscn" id="12_ammo"]
+[ext_resource type="Script" path="res://level/items/item_spawn_manager.gd" id="13_spawn_manager"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vca4y"]
 font_size = 26
@@ -110,6 +113,15 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -8.998861, 5.4999104, -0.9966
 
 [node name="Barrier2" parent="." unique_id=407069246 instance=ExtResource("7_70jqb")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8440256, 0.61929476, 10.912065)
+
+[node name="ItemSpawnManager" type="Node3D" parent="." unique_id=744457622]
+script = ExtResource("13_spawn_manager")
+health_box_scene = ExtResource("11_health")
+shotgun_ammo_scene = ExtResource("12_ammo")
+
+[node name="SpawnTimer" type="Timer" parent="ItemSpawnManager" unique_id=266597413]
+unique_name_in_owner = true
+one_shot = true
 
 [node name="HUD" parent="." unique_id=1579355644 instance=ExtResource("8_70jqb")]
 unique_name_in_owner = true

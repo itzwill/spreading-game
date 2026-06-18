@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://level/items/collectible_item.gd" id="1_collectible"]
+[ext_resource type="PackedScene" uid="uid://8i8yhbg4qrc2" path="res://level/items/Shotgun Ammo.glb" id="2_shotgun_ammo"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_collect"]
+radius = 0.45
+
+[node name="ShotgunAmmoCollectible" type="Area3D"]
+script = ExtResource("1_collectible")
+reward_type = "shotgun_ammo"
+amount = 6
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("SphereShape3D_collect")
+
+[node name="VisualRoot" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, 0, 0.45, 0)
+
+[node name="Shotgun Ammo" parent="VisualRoot" instance=ExtResource("2_shotgun_ammo")]
+
+[node name="Glow" type="OmniLight3D" parent="VisualRoot"]
+light_color = Color(0.95, 0.78, 0.25, 1)
+light_energy = 0.4
+light_specular = 0.35
+omni_range = 1.5
