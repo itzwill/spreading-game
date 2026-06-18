@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://c05t3gt5fqhia" path="res://level/checkboard.png" id="1_cig4d"]
 [ext_resource type="Script" uid="uid://dxw83wqp7y44f" path="res://level/game.gd" id="1_q5axl"]
 [ext_resource type="PackedScene" uid="uid://bce7fqead43d2" path="res://player/player.tscn" id="2_bc4qa"]
-[ext_resource type="Environment" uid="uid://dla8dnr288u0" path="res://world-environments/testing_environment.tres" id="2_q5axl"]
+[ext_resource type="Environment" uid="uid://c1y7p6h4tuh61" path="res://world-environments/game_environment.tres" id="2_q5axl"]
 [ext_resource type="AudioStream" uid="uid://dxl5ceyyv4fxc" path="res://sounds/player/reload/reload_start.wav" id="4_sptj5"]
 [ext_resource type="PackedScene" uid="uid://dtrg33yu34hnv" path="res://mob/mob_spawner.tscn" id="4_vca4y"]
 [ext_resource type="AudioStream" uid="uid://gjubl4skmwq" path="res://sounds/player/reload/insert_shell.wav" id="5_kiuwd"]
@@ -14,7 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://cqe8fmh6bogyl" path="res://world-environments/world-objects/chest.tscn" id="10_kiuwd"]
 [ext_resource type="PackedScene" path="res://level/items/health_box_collectible.tscn" id="11_health"]
 [ext_resource type="PackedScene" path="res://level/items/shotgun_ammo_collectible.tscn" id="12_ammo"]
-[ext_resource type="Script" path="res://level/items/item_spawn_manager.gd" id="13_spawn_manager"]
+[ext_resource type="Script" uid="uid://d22vtxpleijl3" path="res://level/items/item_spawn_manager.gd" id="13_spawn_manager"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_vca4y"]
 font_size = 26
@@ -37,18 +37,21 @@ script = ExtResource("1_q5axl")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=517525407]
 environment = ExtResource("2_q5axl")
 
-[node name="TESTING Light Source" type="DirectionalLight3D" parent="." unique_id=1721279992]
+[node name="DaytimeTestingLight" type="DirectionalLight3D" parent="." unique_id=1721279992]
 transform = Transform3D(0.7071068, -0.6123726, 0.35355315, 0, 0.49999964, 0.8660256, -0.7071068, -0.6123726, 0.35355315, 0, 10, 0)
+visible = false
 light_energy = 0.696
 shadow_enabled = true
 directional_shadow_max_distance = 40.0
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1983773634]
-transform = Transform3D(0.707107, -0.612373, 0.353553, 0, 0.5, 0.866026, -0.707107, -0.612373, 0.353553, 0, 10, 0)
-visible = false
-light_energy = 0.1
+[node name="MoonLight" type="DirectionalLight3D" parent="." unique_id=1983773634]
+transform = Transform3D(0.258819, -0.836516, 0.482963, 0, 0.5, 0.866025, -0.965926, -0.224144, 0.12941, 0, 10, 0)
+light_color = Color(0.54, 0.68, 0.92, 1)
+light_energy = 0.42
+light_angular_distance = 0.3
 shadow_enabled = true
-directional_shadow_max_distance = 40.0
+shadow_blur = 2.0
+directional_shadow_max_distance = 65.0
 
 [node name="Player" parent="." unique_id=1151308884 instance=ExtResource("2_bc4qa")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -7.101237, 0.5, -0.45076323)
