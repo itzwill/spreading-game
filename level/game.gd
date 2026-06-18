@@ -5,9 +5,40 @@ extends Node3D
 
 var player_score = 0
 
+func _ready() -> void:
+	label.visible = false
+	hud.start_game_requested.connect(start_game)
+	hud.retry_requested.connect(retry_game)
+	hud.main_menu_requested.connect(return_to_main_menu)
+	hud.set_score(player_score)
+
+	if get_tree().has_meta("start_immediately"):
+		get_tree().remove_meta("start_immediately")
+		start_game()
+	else:
+		show_main_menu()
+
 func increase_score() -> void:
 	player_score += 1
-	label.text = "Score: " + str(player_score)
+	hud.set_score(player_score)
+
+func show_main_menu() -> void:
+	get_tree().paused = true
+	hud.show_main_menu()
+
+func start_game() -> void:
+	get_tree().paused = false
+	hud.hide_main_menu()
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func retry_game() -> void:
+	get_tree().set_meta("start_immediately", true)
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+func return_to_main_menu() -> void:
+	get_tree().paused = false
+	get_tree().reload_current_scene()
 
 func _on_mob_spawner_mob_spawned(mob: RigidBody3D) -> void:
 	mob.died.connect(increase_score)
@@ -28,4 +59,5 @@ func _on_player_temporary_input_prompt_requested(prompt_id: String) -> void:
 	hud.show_temporary_input_prompt(prompt_id)
 
 func _on_player_died() -> void:
-	hud.game_over()
+	hud.game_over(player_score)
+	get_tree().paused = true
