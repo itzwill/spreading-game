@@ -5,8 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://bk0dvn438cxyj" path="res://HUD/heart.png" id="2_aa5tu"]
 [ext_resource type="Script" uid="uid://bgm4jyb0s6g7c" path="res://HUD/ammo_display.gd" id="2_amwvk"]
 [ext_resource type="Texture2D" uid="uid://cf3qjdt4prfe4" path="res://HUD/Shell Filled.png" id="2_ja1d4"]
-[ext_resource type="Texture2D" path="res://HUD/Crosshair.png" id="6_cross"]
-[ext_resource type="Texture2D" path="res://HUD/Hitmarker.png" id="7_hitmarker"]
+[ext_resource type="Texture2D" uid="uid://dqtlhu2d8wal8" path="res://HUD/Crosshair.png" id="6_cross"]
+[ext_resource type="Texture2D" uid="uid://dmgl7gg2ssppe" path="res://HUD/Hitmarker.png" id="7_hitmarker"]
 
 [sub_resource type="Theme" id="Theme_b7ubu"]
 
@@ -177,9 +177,9 @@ offset_right = 36.0
 offset_bottom = 36.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_filter = 2
 texture = ExtResource("6_cross")
 
 [node name="Hitmarker" type="TextureRect" parent="GameHud" unique_id=38166145]
@@ -199,10 +199,57 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("7_hitmarker")
 
+[node name="InputPrompt" type="HBoxContainer" parent="GameHud" unique_id=251786471]
+unique_name_in_owner = true
+visible = false
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.665
+anchor_right = 0.5
+anchor_bottom = 0.665
+offset_left = -140.0
+offset_top = -36.0
+offset_right = 140.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="InputPromptIcon" type="TextureRect" parent="GameHud/InputPrompt" unique_id=2115071932]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+mouse_filter = 2
+stretch_mode = 5
+
+[node name="InputPromptKeyLabel" type="Label" parent="GameHud/InputPrompt" unique_id=166228310]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+text = "R"
+label_settings = SubResource("LabelSettings_amwvk")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InputPromptActionLabel" type="Label" parent="GameHud/InputPrompt" unique_id=1296994813]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Repair"
+label_settings = SubResource("LabelSettings_amwvk")
+vertical_alignment = 1
+
 [node name="HitmarkerTimer" type="Timer" parent="." unique_id=1355408027]
 unique_name_in_owner = true
 wait_time = 0.1
 one_shot = true
 
+[node name="InputPromptTimer" type="Timer" parent="." unique_id=1858807137]
+unique_name_in_owner = true
+one_shot = true
+
 [connection signal="pressed" from="GameOverMenu/Button Retry" to="." method="_on_button_retry_pressed"]
 [connection signal="timeout" from="HitmarkerTimer" to="." method="_on_hitmarker_timer_timeout"]
+[connection signal="timeout" from="InputPromptTimer" to="." method="_on_input_prompt_timer_timeout"]

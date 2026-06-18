@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://8i8yhbg4qrc2"
-path="res://.godot/imported/Shotgun Ammo.glb-9f6b924f3711b570a076f607db8a4240.scn"
+path="res://.godot/imported/Shotgun Ammo.glb-ac03d248b5c7f51e2667ad362510676a.scn"
 
 [deps]
 
-source_file="res://level/scenery/chest/Shotgun Ammo.glb"
-dest_files=["res://.godot/imported/Shotgun Ammo.glb-9f6b924f3711b570a076f607db8a4240.scn"]
+source_file="res://level/items/Shotgun Ammo.glb"
+dest_files=["res://.godot/imported/Shotgun Ammo.glb-ac03d248b5c7f51e2667ad362510676a.scn"]
 
 [params]
 

@@ -21,5 +21,11 @@ func _on_player_update_health(hp: int) -> void:
 func _on_player_hit_confirmed() -> void:
 	hud.show_hitmarker()
 
+func _on_player_input_prompt_changed(prompt_id: String, visible: bool) -> void:
+	hud.set_input_prompt(prompt_id, visible)
+
+func _on_player_temporary_input_prompt_requested(prompt_id: String) -> void:
+	hud.show_temporary_input_prompt(prompt_id)
+
 func _on_player_died() -> void:
 	hud.game_over()

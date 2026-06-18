@@ -17,6 +17,8 @@ extends CharacterBody3D
 @onready var shotgun: Node3D = %Shotgun
 
 signal hit_confirmed
+signal input_prompt_changed(prompt_id: String, visible: bool)
+signal temporary_input_prompt_requested(prompt_id: String)
 signal update_ammo(gun_ammo: int, reserve_ammo: int)
 signal update_health(hp: int)
 signal died
@@ -40,6 +42,7 @@ var health := MAX_HEALTH
 var gun_ammo: int = MAX_GUN_AMMO
 var reserve_ammo: int = MAX_RESERVE_AMMO
 var is_dead := false
+var repair_prompt_visible := false
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -71,9 +74,15 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	
-	if Input.is_action_pressed("repair"):
-		repair_facing_barrier(delta)
+	var repairable_barrier = get_facing_repairable_barrier()
+	set_repair_prompt_visible(repairable_barrier != null)
+
+	if Input.is_action_pressed("repair") and repairable_barrier:
+		repairable_barrier.repair(REPAIR_RATE * delta)
 	
+	if Input.is_action_just_pressed("shoot") and should_prompt_reload():
+		temporary_input_prompt_requested.emit("reload")
+
 	if Input.is_action_pressed("shoot") and shoot_timer.is_stopped():
 		shoot_bullet()
 
@@ -119,11 +128,21 @@ func get_aim_direction() -> Vector3:
 	return bullet_origin_marker.global_position.direction_to(target_position)
 
 func repair_facing_barrier(delta: float) -> void:
-	var barrier = get_facing_barrier()
+	var barrier = get_facing_repairable_barrier()
 	if barrier == null:
 		return
 
 	barrier.repair(REPAIR_RATE * delta)
+
+func get_facing_repairable_barrier() -> Node:
+	var barrier = get_facing_barrier()
+	if barrier == null:
+		return null
+
+	if barrier.has_method("can_repair") and not barrier.can_repair():
+		return null
+
+	return barrier
 
 func get_facing_barrier() -> Node:
 	var camera = %Camera3D
@@ -144,6 +163,16 @@ func get_facing_barrier() -> Node:
 		return null
 
 	return find_barrier(result.collider)
+
+func set_repair_prompt_visible(visible: bool) -> void:
+	if repair_prompt_visible == visible:
+		return
+
+	repair_prompt_visible = visible
+	input_prompt_changed.emit("repair", repair_prompt_visible)
+
+func should_prompt_reload() -> bool:
+	return gun_ammo == 0 and reserve_ammo > 0 and not is_reloading
 
 func find_barrier(node: Node) -> Node:
 	while node:

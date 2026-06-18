@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cqe8fmh6bogyl"]
 
 [ext_resource type="PackedScene" uid="uid://bkepe7uhfnlfm" path="res://level/scenery/chest/Chest.glb" id="1_vfe5h"]
-[ext_resource type="PackedScene" uid="uid://8i8yhbg4qrc2" path="res://level/scenery/chest/Shotgun Ammo.glb" id="2_8hca5"]
+[ext_resource type="PackedScene" uid="uid://8i8yhbg4qrc2" path="res://level/items/Shotgun Ammo.glb" id="2_8hca5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8hca5"]
 size = Vector3(0.637, 0.409, 0.43)

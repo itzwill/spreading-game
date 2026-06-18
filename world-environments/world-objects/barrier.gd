@@ -50,6 +50,9 @@ func cache_player_camera() -> void:
 func is_blocking() -> bool:
 	return health > 0
 
+func can_repair() -> bool:
+	return health < max_health
+
 func take_barrier_damage(amount: int) -> void:
 	health = max(health - amount, 0.0)
 
