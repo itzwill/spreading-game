@@ -6,13 +6,12 @@ signal state_changed(state_index: int)
 
 @export var max_health := 100
 @export var health_bar_look_range := 12.0
-@export var repaired_state_count := 4
-# Optional model variants. Index 0 is destroyed; index repaired_state_count is fully repaired.
-@export var visual_state_nodes: Array[NodePath] = []
+# Each node path represents one repairable plank/piece. HP reveals them cumulatively.
+@export var repair_piece_nodes: Array[NodePath] = []
 
 var health: float = max_health
 var is_depleted := false
-var current_state_index := -1
+var visible_piece_count := -1
 var player: Node3D
 var player_camera: Camera3D
 var health_bar_sprite: Sprite3D
@@ -20,7 +19,7 @@ var health_progress_bar: ProgressBar
 var health_label: Label
 
 @onready var health_bar_anchor: Node3D = %HealthBarAnchor
-@onready var blocking_collision_shape: CollisionShape3D = %CSGBakedCollisionShape3D
+@onready var blocking_collision_shape: CollisionShape3D = %CollisionShape3D
 
 func _ready() -> void:
 	add_to_group("barriers")
@@ -77,32 +76,32 @@ func repair(amount: float) -> void:
 		update_barrier_state()
 
 func update_barrier_state(force_emit := false) -> void:
-	var next_state_index := get_state_index_for_health()
-	if next_state_index == current_state_index and not force_emit:
+	var next_visible_piece_count := get_visible_piece_count_for_health()
+	if next_visible_piece_count == visible_piece_count and not force_emit:
 		return
 
-	current_state_index = next_state_index
-	blocking_collision_shape.disabled = current_state_index == 0
+	visible_piece_count = next_visible_piece_count
+	blocking_collision_shape.disabled = visible_piece_count == 0
 	update_visual_state()
-	state_changed.emit(current_state_index)
-	print("Barrier state:", current_state_index)
+	state_changed.emit(visible_piece_count)
+	print("Barrier pieces:", visible_piece_count)
 
-func get_state_index_for_health() -> int:
+func get_visible_piece_count_for_health() -> int:
 	if health <= 0:
 		return 0
 
-	var state_count = max(repaired_state_count, 1)
+	var piece_count = max(repair_piece_nodes.size(), 1)
 	var health_percent := health / float(max_health)
-	return clamp(ceili(health_percent * state_count), 1, state_count)
+	return clamp(ceili(health_percent * piece_count), 1, piece_count)
 
 func update_visual_state() -> void:
-	if visual_state_nodes.is_empty():
+	if repair_piece_nodes.is_empty():
 		return
 
-	for i in visual_state_nodes.size():
-		var node := get_node_or_null(visual_state_nodes[i]) as Node3D
+	for i in repair_piece_nodes.size():
+		var node := get_node_or_null(repair_piece_nodes[i]) as Node3D
 		if node:
-			node.visible = i == current_state_index
+			node.visible = i < visible_piece_count
 
 func create_health_bar() -> void:
 	var viewport := SubViewport.new()
