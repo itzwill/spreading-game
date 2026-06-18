@@ -1,11 +1,12 @@
 [gd_scene format=3 uid="uid://bce7fqead43d2"]
 
-[ext_resource type="PackedScene" uid="uid://t4n3stfvjjhn" path="res://player/simple_gun/gun_model.glb" id="1_oul6g"]
 [ext_resource type="Script" uid="uid://c18822f8kk710" path="res://player/player.gd" id="1_rkbax"]
+[ext_resource type="PackedScene" uid="uid://b7006155hj00q" path="res://player/shotgun/shotgun.tscn" id="3_boad6"]
 [ext_resource type="AudioStream" uid="uid://csjnyhiae6kc" path="res://sounds/player/shoot.wav" id="5_qjkh3"]
 [ext_resource type="AudioStream" uid="uid://b6gcy0muo1o50" path="res://sounds/player/hitmarker.wav" id="6_boad6"]
 [ext_resource type="Texture2D" uid="uid://dqtlhu2d8wal8" path="res://player/Crosshair.png" id="6_g6k8r"]
 [ext_resource type="PackedScene" uid="uid://c8wbx8bnldkrw" path="res://player/shotgun/Shotgun_ShortStock.fbx" id="7_boad6"]
+[ext_resource type="AudioStream" uid="uid://j7v5h4wjekro" path="res://sounds/player/reload.wav" id="8_hg6s5"]
 [ext_resource type="Texture2D" uid="uid://dmgl7gg2ssppe" path="res://player/Hitmarker.png" id="8_rgyib"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
@@ -23,12 +24,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3425815, 0)
 
 [node name="Shotgun_ShortStock" parent="Camera3D" unique_id=176708391 instance=ExtResource("7_boad6")]
 transform = Transform3D(-0.015835049, 0.001690418, 0.3671432, 0.010131456, 0.39351863, 8.430197e-10, -0.19260533, 0.020560952, -0.030184688, 0.23579454, -0.28783715, -0.17767319)
+visible = false
 
-[node name="BulletOriginMarker" type="Marker3D" parent="Camera3D/Shotgun_ShortStock" unique_id=617275299]
+[node name="Shotgun" parent="Camera3D" unique_id=289160002 instance=ExtResource("3_boad6")]
 unique_name_in_owner = true
-transform = Transform3D(0.07776453, 0.125703, 5.1411347, -0.015730588, 2.545484, -0.25324252, -2.73716, -0.011057713, 0.14751844, 4.0651975, 0.40103745, -0.0012654066)
+transform = Transform3D(-0.01583506, 0.0016904192, 0.3671432, 0.010131456, 0.39351863, 7.8298373e-10, -0.19260533, 0.020560952, -0.030184705, 0.23579454, -0.28783715, -0.17767319)
 
-[node name="MuzzleLight" type="SpotLight3D" parent="Camera3D/Shotgun_ShortStock/BulletOriginMarker" unique_id=1916280940]
+[node name="BulletOriginMarker" type="Marker3D" parent="Camera3D/Shotgun" unique_id=617275299]
+unique_name_in_owner = true
+transform = Transform3D(0.07776475, 0.12570299, 5.1411347, -0.015730595, 2.545484, -0.25324255, -2.7371597, -0.011057717, 0.1475186, 4.065198, 0.4010377, -0.0012652874)
+
+[node name="MuzzleLight" type="SpotLight3D" parent="Camera3D/Shotgun/BulletOriginMarker" unique_id=1916280940]
 unique_name_in_owner = true
 transform = Transform3D(-0.99994177, -0.01078688, -0.00030388823, -0.010786842, 0.9983487, 0.056422718, -0.00030523865, 0.05642271, -0.9984069, 0, 0, 0)
 light_color = Color(0.9999998, 0.67947674, 0.12597203, 1)
@@ -41,13 +47,9 @@ spot_range = 0.0
 spot_attenuation = 1.76
 spot_angle = 180.0
 
-[node name="gun_model" parent="Camera3D" unique_id=468219028 instance=ExtResource("1_oul6g")]
-transform = Transform3D(-0.42274213, -0.002958428, 0.024570853, -0.0022685665, 0.42329165, 0.011935248, -0.024644129, 0.011783218, -0.42258406, 0.69934416, -0.3464166, -0.7242938)
-visible = false
-
 [node name="ShootTimer" type="Timer" parent="." unique_id=986808445]
 unique_name_in_owner = true
-wait_time = 0.1
+wait_time = 0.75
 one_shot = true
 
 [node name="HitmarkerTimer" type="Timer" parent="." unique_id=1355408027]
@@ -55,9 +57,9 @@ unique_name_in_owner = true
 wait_time = 0.1
 one_shot = true
 
-[node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1020898641]
-stream = ExtResource("5_qjkh3")
-volume_db = -11.896
+[node name="ReloadTimer" type="Timer" parent="." unique_id=2110713171]
+wait_time = 0.37
+one_shot = true
 
 [node name="Crosshair" type="TextureRect" parent="." unique_id=1474836054]
 anchors_preset = 8
@@ -91,7 +93,16 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("8_rgyib")
 
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1020898641]
+stream = ExtResource("5_qjkh3")
+volume_db = -11.896
+
 [node name="HitmarkerSound" type="AudioStreamPlayer2D" parent="." unique_id=626310959]
 stream = ExtResource("6_boad6")
 
+[node name="ReloadSound" type="AudioStreamPlayer2D" parent="." unique_id=762033717]
+unique_name_in_owner = true
+stream = ExtResource("8_hg6s5")
+
 [connection signal="timeout" from="HitmarkerTimer" to="." method="_on_hitmarker_timer_timeout"]
+[connection signal="timeout" from="ReloadTimer" to="." method="_on_reload_timer_timeout"]

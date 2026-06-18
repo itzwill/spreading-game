@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://b7006155hj00q"]
+
+[ext_resource type="PackedScene" uid="uid://c8wbx8bnldkrw" path="res://player/shotgun/Shotgun_ShortStock.fbx" id="1_84ec3"]
+[ext_resource type="Script" uid="uid://clws5855idepp" path="res://player/shotgun/shotgun.gd" id="2_fvexy"]
+
+[sub_resource type="Animation" id="Animation_fvexy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Shotgun_ShortStock:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Shotgun_ShortStock:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.5707964, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_mqbnd"]
+resource_name = "fire"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Shotgun_ShortStock:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.02976509, 0.23333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(-0.496, 0, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Shotgun_ShortStock:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.030026188, 0.23315988),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(-1.5707964, 0, 0), Vector3(-1.5236725, -1.5707964, 1.5707964), Vector3(-1.5707964, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_1w04m"]
+_data = {
+&"RESET": SubResource("Animation_fvexy"),
+&"fire": SubResource("Animation_mqbnd")
+}
+
+[node name="Shotgun" unique_id=176708391 instance=ExtResource("1_84ec3")]
+script = ExtResource("2_fvexy")
+
+[node name="Shotgun_ShortStock" parent="." index="0" unique_id=1576531335]
+transform = Transform3D(100.000015, 0, 0, 0, -4.3711393e-06, 100.00001, 0, -100.00001, -4.3711393e-06, 0, 0, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="1" unique_id=1603703355]
+libraries/ = SubResource("AnimationLibrary_1w04m")

@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://d3sr78vbrxhg1"]
+
+[ext_resource type="Script" uid="uid://kjoytxdjmqgo" path="res://world-environments/world-objects/barrier.gd" id="1_1j2xs"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ov0ok"]
+albedo_color = Color(0.39, 0.21267998, 0.14819999, 1)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ov0ok"]
+data = PackedVector3Array(-0.5, -0.5, 0.075912476, -0.5, -0.5, -0.075912476, -0.5, 0.5, -0.075912476, 0.5, -0.5, -0.075912476, -0.5, -0.5, -0.075912476, -0.5, -0.5, 0.075912476, -0.5, 0.5, -0.075912476, -0.5, -0.5, -0.075912476, 0.5, -0.5, -0.075912476, -0.5, 0.5, -0.075912476, -0.5, 0.5, 0.075912476, -0.5, -0.5, 0.075912476, -0.5, -0.5, 0.075912476, -0.5, 0.5, 0.075912476, 0.5, 0.5, 0.075912476, 0.5, 0.5, 0.075912476, -0.5, 0.5, 0.075912476, -0.5, 0.5, -0.075912476, -0.5, -0.5, 0.075912476, 0.5, -0.5, 0.075912476, 0.5, -0.5, -0.075912476, 0.5, 0.5, 0.075912476, 0.5, -0.5, 0.075912476, -0.5, -0.5, 0.075912476, 0.5, -0.5, -0.075912476, 0.5, -0.5, 0.075912476, 0.5, 0.5, 0.075912476, 0.5, -0.5, -0.075912476, 0.5, 0.5, -0.075912476, -0.5, 0.5, -0.075912476, -0.5, 0.5, -0.075912476, 0.5, 0.5, -0.075912476, 0.5, 0.5, 0.075912476, 0.5, 0.5, 0.075912476, 0.5, 0.5, -0.075912476, 0.5, -0.5, -0.075912476)
+
+[node name="Barrier" type="StaticBody3D" unique_id=407069246]
+script = ExtResource("1_1j2xs")
+
+[node name="Barrier" type="CSGBox3D" parent="." unique_id=190254967]
+transform = Transform3D(-4.371139e-08, 0, 22.984976, 0, 1.2385898, 0, -1, 0, -1.0047052e-06, 0, 0.5, 0)
+use_collision = true
+size = Vector3(1, 1, 0.15182495)
+material = SubResource("StandardMaterial3D_ov0ok")
+
+[node name="CSGBakedCollisionShape3D" type="CollisionShape3D" parent="." unique_id=420015387]
+transform = Transform3D(-4.371139e-08, 0, 22.984976, 0, 1.2385898, 0, -1, 0, -1.0047052e-06, 0, 0.5, 0)
+shape = SubResource("ConcavePolygonShape3D_ov0ok")

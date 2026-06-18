@@ -23,9 +23,8 @@ func _physics_process(delta: float) -> void:
 	if result:
 		var body: Node3D = result.collider
 		
-		
-
-		if body.has_method("take_damage"):
+	
+		if body.is_in_group("damageable"):
 			var owner_id = body.shape_find_owner(result.shape)
 			var shape_node = body.shape_owner_get_owner(owner_id)
 

@@ -6,17 +6,17 @@ signal died
 @onready var animation_tree: AnimationTree = %ZombieModel/AnimationTree
 @onready var player: CharacterBody3D = get_node("/root/Game/Player")
 @onready var timer: Timer = %Timer
-@onready var body_collision_shape: CollisionShape3D = %BodyCollisionShape
-@onready var head_collision_shape: CollisionShape3D = %HeadCollisionShape
 @onready var hurt_sound: AudioStreamPlayer3D = %HurtSound
 @onready var death_sound: AudioStreamPlayer3D = %DeathSound
-
 
 const SPEED = 2.5
 const MAX_SPEED = 5
 
 const MAX_HEALTH := 100
 var health := MAX_HEALTH
+
+func _ready():
+	add_to_group("damageable")
 
 func _physics_process(delta: float) -> void:
 	var direction = global_position.direction_to(player.global_position)
@@ -101,10 +101,6 @@ func die():
 	zombie_model.die()
 	timer.start()
 	died.emit()
-	#gravity_scale = 1.0
-	
-	body_collision_shape.disabled = true
-	head_collision_shape.disabled = true
 	linear_velocity = Vector3.ZERO
 
 func _on_timer_timeout() -> void:

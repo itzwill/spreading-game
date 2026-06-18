@@ -1,0 +1,166 @@
+[gd_scene format=3 uid="uid://cnvnyl05rhhve"]
+
+[ext_resource type="Script" uid="uid://uk5b80kgepfa" path="res://HUD/hud.gd" id="1_amwvk"]
+[ext_resource type="Texture2D" uid="uid://5ntbsdkh6618" path="res://HUD/Shell Empty.png" id="1_b7ubu"]
+[ext_resource type="Texture2D" uid="uid://bk0dvn438cxyj" path="res://HUD/heart.png" id="2_aa5tu"]
+[ext_resource type="Script" uid="uid://bgm4jyb0s6g7c" path="res://HUD/ammo_display.gd" id="2_amwvk"]
+[ext_resource type="Texture2D" uid="uid://cf3qjdt4prfe4" path="res://HUD/Shell Filled.png" id="2_ja1d4"]
+
+[sub_resource type="Theme" id="Theme_b7ubu"]
+
+[sub_resource type="Theme" id="Theme_njmlf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lkt0t"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6i5cd"]
+bg_color = Color(0.7736106, 0.14021206, 3.85046e-07, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_amwvk"]
+font_size = 28
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+
+[node name="HUD" type="CanvasLayer" unique_id=1579355644]
+script = ExtResource("1_amwvk")
+
+[node name="GameOverMenu" type="CanvasLayer" parent="." unique_id=1308693146]
+unique_name_in_owner = true
+visible = false
+
+[node name="Button Retry" type="MenuButton" parent="GameOverMenu" unique_id=1030087131]
+unique_name_in_owner = true
+offset_left = 669.0
+offset_top = 450.0
+offset_right = 1243.0
+offset_bottom = 630.0
+pivot_offset_ratio = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 126
+toggle_mode = false
+text = "Retry"
+flat = false
+
+[node name="GameHud" type="CanvasLayer" parent="." unique_id=1842410032]
+unique_name_in_owner = true
+
+[node name="MarginContainer" type="MarginContainer" parent="GameHud" unique_id=1995969023]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = SubResource("Theme_b7ubu")
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="HPBarContainer" type="HBoxContainer" parent="GameHud/MarginContainer" unique_id=422885648]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+mouse_filter = 2
+theme_override_constants/separation = 24
+
+[node name="Heart" type="TextureRect" parent="GameHud/MarginContainer/HPBarContainer" unique_id=1315995148]
+layout_mode = 2
+texture = ExtResource("2_aa5tu")
+stretch_mode = 3
+
+[node name="HealthBar" type="ProgressBar" parent="GameHud/MarginContainer/HPBarContainer" unique_id=769299408]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 20)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme = SubResource("Theme_njmlf")
+theme_override_styles/background = SubResource("StyleBoxFlat_lkt0t")
+theme_override_styles/fill = SubResource("StyleBoxFlat_6i5cd")
+value = 100.0
+rounded = true
+show_percentage = false
+
+[node name="HPLabel" type="Label" parent="GameHud/MarginContainer/HPBarContainer" unique_id=636051688]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "100 HP"
+label_settings = SubResource("LabelSettings_amwvk")
+
+[node name="AmmoDisplay" type="Control" parent="GameHud/MarginContainer" unique_id=1631227601]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_amwvk")
+shell_full = ExtResource("2_ja1d4")
+shell_empty = ExtResource("1_b7ubu")
+
+[node name="Ammo with Label" type="HBoxContainer" parent="GameHud/MarginContainer/AmmoDisplay" unique_id=731287076]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 198.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Shells" type="HBoxContainer" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label" unique_id=466807973]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+mouse_filter = 2
+
+[node name="ShellFilled" type="TextureRect" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label/Shells" unique_id=756476385]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_ja1d4")
+
+[node name="ShellFilled2" type="TextureRect" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label/Shells" unique_id=1448482950]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_ja1d4")
+
+[node name="ShellFilled3" type="TextureRect" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label/Shells" unique_id=1572809866]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_ja1d4")
+
+[node name="ShellFilled4" type="TextureRect" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label/Shells" unique_id=855366200]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_ja1d4")
+
+[node name="ShellFilled5" type="TextureRect" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label/Shells" unique_id=1129605844]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_ja1d4")
+
+[node name="ShellFilled6" type="TextureRect" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label/Shells" unique_id=1105488834]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_ja1d4")
+
+[node name="AmmoLabel" type="Label" parent="GameHud/MarginContainer/AmmoDisplay/Ammo with Label" unique_id=146043402]
+unique_name_in_owner = true
+layout_mode = 2
+text = "6 | 38"
+label_settings = SubResource("LabelSettings_amwvk")
+
+[connection signal="pressed" from="GameOverMenu/Button Retry" to="." method="_on_button_retry_pressed"]
