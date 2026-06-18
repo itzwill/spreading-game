@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqtlhu2d8wal8"
-path="res://.godot/imported/Crosshair.png-05f7931f2e18f80a9e05f3f4294e197d.ctex"
+uid="uid://dmgl7gg2ssppe"
+path="res://.godot/imported/Hitmarker.png-f6f902563eb921c5a5e221cced37a306.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://player/Crosshair.png"
-dest_files=["res://.godot/imported/Crosshair.png-05f7931f2e18f80a9e05f3f4294e197d.ctex"]
+source_file="res://HUD/Hitmarker.png"
+dest_files=["res://.godot/imported/Hitmarker.png-f6f902563eb921c5a5e221cced37a306.ctex"]
 
 [params]
 

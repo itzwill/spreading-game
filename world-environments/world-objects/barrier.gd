@@ -6,7 +6,8 @@ signal state_changed(state_index: int)
 
 @export var max_health := 100
 @export var health_bar_look_range := 12.0
-@export var visual_state_count := 4
+@export var repaired_state_count := 4
+# Optional model variants. Index 0 is destroyed; index repaired_state_count is fully repaired.
 @export var visual_state_nodes: Array[NodePath] = []
 
 var health: float = max_health
@@ -90,7 +91,7 @@ func get_state_index_for_health() -> int:
 	if health <= 0:
 		return 0
 
-	var state_count = max(visual_state_count, 1)
+	var state_count = max(repaired_state_count, 1)
 	var health_percent := health / float(max_health)
 	return clamp(ceili(health_percent * state_count), 1, state_count)
 

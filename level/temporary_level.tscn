@@ -114,8 +114,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.8440256, 0.61929476, 10.91
 [node name="HUD" parent="." unique_id=1579355644 instance=ExtResource("8_70jqb")]
 unique_name_in_owner = true
 
-[connection signal="bullet_hit" from="Player" to="." method="_on_player_bullet_hit"]
 [connection signal="died" from="Player" to="." method="_on_player_died"]
+[connection signal="hit_confirmed" from="Player" to="." method="_on_player_hit_confirmed"]
 [connection signal="update_ammo" from="Player" to="." method="_on_player_update_ammo"]
 [connection signal="update_health" from="Player" to="." method="_on_player_update_health"]
 [connection signal="mob_spawned" from="MobSpawner" to="." method="_on_mob_spawner_mob_spawned"]

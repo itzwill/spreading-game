@@ -4,10 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://b7006155hj00q" path="res://player/shotgun/shotgun.tscn" id="3_boad6"]
 [ext_resource type="AudioStream" uid="uid://csjnyhiae6kc" path="res://sounds/player/shoot.wav" id="5_qjkh3"]
 [ext_resource type="AudioStream" uid="uid://b6gcy0muo1o50" path="res://sounds/player/hitmarker.wav" id="6_boad6"]
-[ext_resource type="Texture2D" uid="uid://dqtlhu2d8wal8" path="res://player/Crosshair.png" id="6_g6k8r"]
 [ext_resource type="PackedScene" uid="uid://c8wbx8bnldkrw" path="res://player/shotgun/Shotgun_ShortStock.fbx" id="7_boad6"]
 [ext_resource type="AudioStream" uid="uid://j7v5h4wjekro" path="res://sounds/player/reload.wav" id="8_hg6s5"]
-[ext_resource type="Texture2D" uid="uid://dmgl7gg2ssppe" path="res://player/Hitmarker.png" id="8_rgyib"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
 
@@ -52,46 +50,9 @@ unique_name_in_owner = true
 wait_time = 0.75
 one_shot = true
 
-[node name="HitmarkerTimer" type="Timer" parent="." unique_id=1355408027]
-unique_name_in_owner = true
-wait_time = 0.1
-one_shot = true
-
 [node name="ReloadTimer" type="Timer" parent="." unique_id=2110713171]
 wait_time = 0.37
 one_shot = true
-
-[node name="Crosshair" type="TextureRect" parent="." unique_id=1474836054]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -36.0
-offset_top = -36.0
-offset_right = 36.0
-offset_bottom = 36.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-texture = ExtResource("6_g6k8r")
-
-[node name="Hitmarker" type="TextureRect" parent="." unique_id=38166145]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -36.0
-offset_top = -36.0
-offset_right = 36.0
-offset_bottom = 36.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("8_rgyib")
 
 [node name="ShootSound" type="AudioStreamPlayer2D" parent="." unique_id=1020898641]
 stream = ExtResource("5_qjkh3")
@@ -104,5 +65,4 @@ stream = ExtResource("6_boad6")
 unique_name_in_owner = true
 stream = ExtResource("8_hg6s5")
 
-[connection signal="timeout" from="HitmarkerTimer" to="." method="_on_hitmarker_timer_timeout"]
 [connection signal="timeout" from="ReloadTimer" to="." method="_on_reload_timer_timeout"]

@@ -57,9 +57,6 @@ unique_name_in_owner = true
 stream = ExtResource("4_j4mfc")
 
 [connection signal="velocity_computed" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_velocity_computed"]
-[connection signal="timeout" from="NavigationTimer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="NavigationTimer" to="." method="_on_navigation_timer_timeout"]
-[connection signal="timeout" from="AttackTimer" to="." method="_on_timer_timeout"]
-[connection signal="timeout" from="AttackTimer" to="." method="_on_attack_timer_timeout"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_navigation_timer_timeout"]
 [connection signal="timeout" from="DespawnTimer" to="." method="_on_despawn_timer_timeout"]

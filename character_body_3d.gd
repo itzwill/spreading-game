@@ -12,19 +12,17 @@ signal died
 @onready var attack_timer: Timer = %AttackTimer
 @onready var forward_ray: RayCast3D = %ForwardRay
 
-# Mob Movement Speed
 const SPEED = 2.5
 const MAX_SPEED = 5
 
-# Mob's Health
 const MAX_HEALTH := 100
-var health := MAX_HEALTH
 
-# For attacking the player
 const ATTACK_RANGE := 1.5
 const ATTACK_DAMAGE := 10
 
-func _ready():
+var health := MAX_HEALTH
+
+func _ready() -> void:
 	add_to_group("damageable")
 
 func _physics_process(_delta: float) -> void:
@@ -38,8 +36,6 @@ func _physics_process(_delta: float) -> void:
 		attack_barrier()
 		move_and_slide()
 		return
-
-	#navigation_agent.target_position = player.global_position
 
 	var next_path_position = navigation_agent.get_next_path_position()
 
@@ -64,11 +60,8 @@ func _on_navigation_agent_3d_velocity_computed(safe_velocity: Vector3) -> void:
 
 func _on_navigation_timer_timeout() -> void:
 	set_target_to_player()
-	
-func _on_attack_timer_timeout() -> void:
-	pass # Replace with function body.
 
-func set_target_to_player():
+func set_target_to_player() -> void:
 	navigation_agent.target_position = player.global_position
 
 func can_attack_player() -> bool:
@@ -91,10 +84,7 @@ func can_attack_barrier() -> bool:
 	if not forward_ray.is_colliding():
 		return false
 
-	var collider = forward_ray.get_collider()
-
-	var barrier = find_barrier(collider)
-		
+	var barrier = find_barrier(forward_ray.get_collider())
 	if barrier:
 		if barrier.has_method("is_blocking"):
 			return barrier.is_blocking()
@@ -113,7 +103,6 @@ func find_barrier(node: Node) -> Node:
 	return null
 	
 func attack_barrier() -> void:
-	
 	velocity = Vector3.ZERO
 
 	if not attack_timer.is_stopped():
@@ -131,7 +120,7 @@ func attack_barrier() -> void:
 func take_damage(
 	hit_location: String,
 	distance: float
-):
+) -> void:
 	if health <= 0:
 		return
 
@@ -192,16 +181,15 @@ func calculate_damage(
 
 	return roundi(damage)
 
-func animate_attack():
+func animate_attack() -> void:
 	zombie_model.attack()
 	
-func die():
+func die() -> void:
 	death_sound.play()
 	set_physics_process(false)
 	zombie_model.die()
 	despawn_timer.start()
 	died.emit()
-	#linear_velocity = Vector3.ZERO
 
 func _on_despawn_timer_timeout() -> void:
 	queue_free()

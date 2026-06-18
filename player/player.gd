@@ -5,20 +5,18 @@ extends CharacterBody3D
 @export var reload_end_sound: AudioStream
 
 @onready var shoot_timer: Timer = %ShootTimer
-@onready var hitmarker_timer: Timer = %HitmarkerTimer
 @onready var reload_timer: Timer = $ReloadTimer
 
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 @onready var hitmarker_sound: AudioStreamPlayer2D = $HitmarkerSound
 @onready var reload_sound: AudioStreamPlayer2D = %ReloadSound
 
-@onready var hitmarker: TextureRect = $Hitmarker
 @onready var muzzle_light: SpotLight3D = %MuzzleLight
 
 @onready var bullet_origin_marker: Marker3D = %BulletOriginMarker
 @onready var shotgun: Node3D = %Shotgun
 
-signal bullet_hit(body: Node3D)
+signal hit_confirmed
 signal update_ammo(gun_ammo: int, reserve_ammo: int)
 signal update_health(hp: int)
 signal died
@@ -31,23 +29,25 @@ const SHOTGUN_SPREAD := 4.0 # degrees
 const REPAIR_RANGE := 3.0
 const REPAIR_RATE := 25.0
 
-#Reload params
 const FIRST_SHELL_DELAY := 0.4
 const SHELL_INSERT_DELAY := 0.37
-const MAX_GUN_AMMO: int = 6;
-var MAX_RESERVE_AMMO: int = 38
+const MAX_GUN_AMMO := 6
+const MAX_RESERVE_AMMO := 38
 
 var is_reloading := false
 var muzzle_light_tween: Tween
 var health := MAX_HEALTH
 var gun_ammo: int = MAX_GUN_AMMO
-var reserve_ammo: int = MAX_RESERVE_AMMO;
+var reserve_ammo: int = MAX_RESERVE_AMMO
 var is_dead := false
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	add_to_group("player")
-	#update_ammo.emit(gun_ammo, reserve_ammo)
+	call_deferred("emit_ammo_update")
+
+func emit_ammo_update() -> void:
+	update_ammo.emit(gun_ammo, reserve_ammo)
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
@@ -153,15 +153,15 @@ func find_barrier(node: Node) -> Node:
 
 	return null
 
-func shoot_bullet():
+func shoot_bullet() -> void:
 	if gun_ammo == 0:
 		return
 	
 	if is_reloading:
 		cancel_reload()
 		
-	gun_ammo -= 1;
-	update_ammo.emit(gun_ammo, reserve_ammo)
+	gun_ammo -= 1
+	emit_ammo_update()
 	
 	const BULLET = preload("res://player/bullet.tscn")
 
@@ -204,14 +204,12 @@ func shoot_bullet():
 	shotgun.shoot()
 
 func _on_bullet_hit(body: Node3D) -> void:
-	bullet_hit.emit(body);
 	if body.has_method("take_damage"):
-		handle_hitmarker()
+		hit_confirmed.emit()
+		play_hitmarker_sound()
 
-func handle_hitmarker():
+func play_hitmarker_sound() -> void:
 	hitmarker_sound.play()
-	hitmarker.visible = true;
-	hitmarker_timer.start()
 	
 func flash_muzzle() -> void:
 	if muzzle_light_tween:
@@ -238,25 +236,19 @@ func flash_muzzle() -> void:
 		0.1
 	)
 
-func _on_hitmarker_timer_timeout() -> void:
-	hitmarker.visible = false;
-
-func _on_muzzle_flash_timer_timeout() -> void:
-	muzzle_light.visible = false;
-	
 func take_damage(amount: int) -> void:
-	health -= amount
-	if health <= 0:
-		health = 0
+	health = max(health - amount, 0)
+	if health == 0:
 		die()
+
 	update_health.emit(health)
 	print("Player health:", health)
-	
 
 func die() -> void:
-	print("Player died")
 	if is_dead:
 		return
+
+	print("Player died")
 	is_dead = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	died.emit()
@@ -276,8 +268,6 @@ func start_reload() -> void:
 	reload_sound.stream = reload_start_sound
 	reload_sound.play()
 
-	#shotgun.reload_start()
-
 	reload_timer.start(FIRST_SHELL_DELAY)
 
 func _on_reload_timer_timeout() -> void:
@@ -295,12 +285,10 @@ func _on_reload_timer_timeout() -> void:
 	gun_ammo += 1
 	reserve_ammo -= 1
 
-	update_ammo.emit(gun_ammo, reserve_ammo)
+	emit_ammo_update()
 
 	reload_sound.stream = insert_shell_sound
 	reload_sound.play()
-
- 	#shotgun.insert_shell()
 
 	if gun_ammo < MAX_GUN_AMMO and reserve_ammo > 0:
 		reload_timer.start(SHELL_INSERT_DELAY)
@@ -311,10 +299,8 @@ func finish_reload() -> void:
 	is_reloading = false
 	reload_sound.stream = reload_end_sound
 	reload_sound.play()
-	#shotgun.reload_end()
 
 func cancel_reload() -> void:
 	is_reloading = false
 	reload_timer.stop()
 	reload_sound.stop()
-	#shotgun.reload_cancel()
