@@ -10,11 +10,22 @@ script = ExtResource("1_fbqtq")
 mob_to_spawn = ExtResource("2_48w23")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1709885815]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_jenia")
 
-[node name="Marker3D" type="Marker3D" parent="." unique_id=643103381]
+[node name="NorthSpawner" type="Marker3D" parent="." unique_id=643103381]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 15)
+
+[node name="SouthSpawner" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15)
+
+[node name="EastSpawner" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0, 0)
+
+[node name="WestSpawner" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 0, 0)
 
 [node name="Timer" type="Timer" parent="." unique_id=1197449669]
 unique_name_in_owner = true

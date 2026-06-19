@@ -36,3 +36,7 @@ class_name GameplaySettings
 @export var zombie_spawn_burst_max := 4
 @export var zombie_spawn_burst_ramp_per_minute := 0.35
 @export var zombie_spawn_scatter_radius := 1.25
+@export var zombie_primary_spawn_weight := 12.0
+@export var zombie_secondary_spawn_start_weight := 0.35
+@export var zombie_secondary_spawn_max_weight := 8.0
+@export var zombie_secondary_spawn_weight_ramp_per_minute := 1.25

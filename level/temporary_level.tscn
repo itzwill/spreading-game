@@ -85,7 +85,7 @@ insert_shell_sound = ExtResource("5_kiuwd")
 reload_end_sound = ExtResource("6_36l8r")
 
 [node name="MobSpawner" parent="." unique_id=1618640347 instance=ExtResource("4_vca4y")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5285847, 26.64925)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5285847, 0)
 mob_to_spawn = ExtResource("7_c45uj")
 
 [node name="Label" type="Label" parent="." unique_id=1062938222]
