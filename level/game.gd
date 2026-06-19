@@ -10,6 +10,8 @@ const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_setti
 @onready var mob_spawner: Node3D = $MobSpawner
 
 var player_score = 0
+var time_survived := 0.0
+var game_active := false
 
 func _ready() -> void:
 	ensure_gameplay_settings()
@@ -20,7 +22,9 @@ func _ready() -> void:
 	hud.resume_game_requested.connect(resume_game)
 	hud.retry_requested.connect(retry_game)
 	hud.main_menu_requested.connect(return_to_main_menu)
+	hud.sensitivity_changed.connect(_on_hud_sensitivity_changed)
 	hud.set_score(player_score)
+	hud.set_sensitivity(player.mouse_sensitivity)
 
 	if get_tree().has_meta("start_immediately"):
 		get_tree().remove_meta("start_immediately")
@@ -28,10 +32,14 @@ func _ready() -> void:
 	else:
 		show_main_menu()
 
+func _process(delta: float) -> void:
+	if game_active:
+		time_survived += delta
+
 func increase_score() -> void:
 	player_score += 1
 	hud.set_score(player_score)
-	print("Zombies fragged:", player_score)
+	print("Zombies slain:", player_score)
 
 func ensure_gameplay_settings() -> void:
 	if gameplay_settings == null:
@@ -66,6 +74,7 @@ func show_main_menu() -> void:
 	hud.show_main_menu()
 
 func start_game() -> void:
+	game_active = true
 	get_tree().paused = false
 	hud.hide_main_menu()
 	hud.hide_pause_menu()
@@ -110,9 +119,14 @@ func _on_player_input_prompt_changed(prompt_id: String, visible: bool) -> void:
 func _on_player_temporary_input_prompt_requested(prompt_id: String) -> void:
 	hud.show_temporary_input_prompt(prompt_id)
 
+func _on_hud_sensitivity_changed(value: float) -> void:
+	if player.has_method("set_mouse_sensitivity"):
+		player.set_mouse_sensitivity(value)
+
 func _on_player_pause_requested() -> void:
 	pause_game()
 
 func _on_player_died() -> void:
-	hud.game_over(player_score)
+	game_active = false
+	hud.game_over(player_score, time_survived)
 	get_tree().paused = true

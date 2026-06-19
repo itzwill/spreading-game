@@ -4,6 +4,7 @@ signal start_game_requested
 signal resume_game_requested
 signal retry_requested
 signal main_menu_requested
+signal sensitivity_changed(value: float)
 
 const INPUT_PROMPTS := {
 	"repair": {
@@ -37,8 +38,12 @@ var menu_overlay: Control
 var pause_overlay: Control
 var game_over_overlay: Control
 var game_over_score_label: Label
+var game_over_time_label: Label
 var score_value_label: Label
 var score_pulse_tween: Tween
+var sensitivity_sliders: Array[HSlider] = []
+var sensitivity_value := 0.28
+var is_syncing_sensitivity := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -68,6 +73,13 @@ func set_score(score: int) -> void:
 
 	score_value_label.text = str(score)
 	pulse_score()
+
+func set_sensitivity(value: float) -> void:
+	sensitivity_value = value
+	is_syncing_sensitivity = true
+	for slider in sensitivity_sliders:
+		slider.value = sensitivity_value
+	is_syncing_sensitivity = false
 
 func pulse_score() -> void:
 	if score_pulse_tween:
@@ -129,8 +141,9 @@ func hide_pause_menu() -> void:
 	pause_overlay.visible = false
 	game_hud.visible = true
 
-func game_over(score: int) -> void:
+func game_over(score: int, time_survived: float) -> void:
 	game_over_score_label.text = str(score)
+	game_over_time_label.text = format_time(time_survived)
 	pause_overlay.visible = false
 	game_over_overlay.visible = true
 	game_over_menu.visible = false
@@ -161,7 +174,7 @@ func build_score_counter() -> void:
 	game_hud.add_child(container)
 
 	var title := Label.new()
-	title.text = "Zombies Fragged"
+	title.text = "Zombies Slain"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	title.label_settings = make_label_settings(20, 4)
 	container.add_child(title)
@@ -187,7 +200,7 @@ func build_main_menu() -> void:
 	panel.add_child(title)
 
 	var subtitle := Label.new()
-	subtitle.text = "Hold the line. Repair the barricade. Keep moving."
+	subtitle.text = "Hold the line. Repair the barricades. Keep moving."
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.label_settings = make_label_settings(22, 4)
 	panel.add_child(subtitle)
@@ -206,6 +219,7 @@ func build_main_menu() -> void:
 	add_control_row(guide, "Fire", [preload("res://HUD/inputs/mouse_left.png")])
 	add_control_row(guide, "Reload", [preload("res://HUD/inputs/keyboard_r.png")])
 	add_control_row(guide, "Repair", [preload("res://HUD/inputs/keyboard_e.png")])
+	add_sensitivity_control(panel)
 
 	var start_button := make_menu_button("Start Game")
 	start_button.pressed.connect(func(): start_game_requested.emit())
@@ -230,6 +244,7 @@ func build_pause_menu() -> void:
 	var resume_button := make_menu_button("Resume")
 	resume_button.pressed.connect(func(): resume_game_requested.emit())
 	panel.add_child(resume_button)
+	add_sensitivity_control(panel)
 
 func build_game_over_menu() -> void:
 	game_over_overlay = make_overlay("GameOverOverlay")
@@ -240,13 +255,13 @@ func build_game_over_menu() -> void:
 	game_over_overlay.add_child(panel)
 
 	var title := Label.new()
-	title.text = "Game Over"
+	title.text = "Game Over - You Died"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.label_settings = make_label_settings(64, 8)
 	panel.add_child(title)
 
 	var caption := Label.new()
-	caption.text = "Zombies Fragged"
+	caption.text = "Zombies Slain"
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caption.label_settings = make_label_settings(24, 4)
 	panel.add_child(caption)
@@ -258,6 +273,20 @@ func build_game_over_menu() -> void:
 	score.label_settings = make_label_settings(56, 7)
 	panel.add_child(score)
 	game_over_score_label = score
+
+	var time_caption := Label.new()
+	time_caption.text = "Time Survived"
+	time_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	time_caption.label_settings = make_label_settings(24, 4)
+	panel.add_child(time_caption)
+
+	var time := Label.new()
+	time.name = "GameOverTime"
+	time.text = "00:00"
+	time.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	time.label_settings = make_label_settings(40, 6)
+	panel.add_child(time)
+	game_over_time_label = time
 
 	var buttons := HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -323,6 +352,48 @@ func add_text_key_control_row(parent: VBoxContainer, label_text: String, key_tex
 	key.label_settings = make_label_settings(22, 4)
 	icon_box.add_child(key)
 	parent.add_child(row)
+
+func add_sensitivity_control(parent: VBoxContainer) -> void:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 18)
+
+	var label := Label.new()
+	label.custom_minimum_size = Vector2(220, 42)
+	label.text = "Aim Sensitivity"
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.label_settings = make_label_settings(22, 4)
+	row.add_child(label)
+
+	var slider := HSlider.new()
+	slider.custom_minimum_size = Vector2(260, 42)
+	slider.min_value = 0.1
+	slider.max_value = 0.8
+	slider.step = 0.01
+	slider.value = sensitivity_value
+	slider.value_changed.connect(_on_sensitivity_slider_changed)
+	row.add_child(slider)
+	sensitivity_sliders.append(slider)
+
+	parent.add_child(row)
+
+func _on_sensitivity_slider_changed(value: float) -> void:
+	if is_syncing_sensitivity:
+		return
+
+	sensitivity_value = value
+	is_syncing_sensitivity = true
+	for slider in sensitivity_sliders:
+		if slider.value != value:
+			slider.value = value
+	is_syncing_sensitivity = false
+	sensitivity_changed.emit(value)
+
+func format_time(seconds: float) -> String:
+	var total_seconds := floori(seconds)
+	var minutes := floori(total_seconds / 60.0)
+	var remaining_seconds := total_seconds % 60
+	return "%02d:%02d" % [minutes, remaining_seconds]
 
 func make_control_row(label_text: String) -> HBoxContainer:
 	var row := HBoxContainer.new()

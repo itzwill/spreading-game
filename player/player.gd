@@ -21,6 +21,7 @@ const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_setti
 
 @onready var muzzle_light: SpotLight3D = %MuzzleLight
 
+@onready var camera: Camera3D = %Camera3D
 @onready var bullet_origin_marker: Marker3D = %BulletOriginMarker
 @onready var shotgun: Node3D = %Shotgun
 
@@ -34,18 +35,25 @@ signal died
 
 const FIRST_SHELL_DELAY := 0.4
 const SHELL_INSERT_DELAY := 0.37
+const VERTICAL_SENSITIVITY_RATIO := 0.45
 
 var is_reloading := false
 var muzzle_light_tween: Tween
+var camera_shake_time := 0.0
+var camera_shake_duration := 0.0
+var camera_shake_strength := 0.0
+var camera_base_position := Vector3.ZERO
 var health := 100
 var gun_ammo := 6
 var reserve_ammo := 38
 var is_dead := false
 var repair_prompt_visible := false
 var repair_sound_active := false
+var mouse_sensitivity := 0.28
 
 func _ready() -> void:
 	ensure_gameplay_settings()
+	camera_base_position = camera.position
 	health = gameplay_settings.player_max_health
 	gun_ammo = gameplay_settings.shotgun_max_gun_ammo
 	reserve_ammo = gameplay_settings.shotgun_max_reserve_ammo
@@ -77,6 +85,9 @@ func set_gameplay_settings(settings: Resource) -> void:
 
 func emit_ammo_update() -> void:
 	update_ammo.emit(gun_ammo, reserve_ammo)
+
+func _process(delta: float) -> void:
+	update_camera_shake(delta)
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
@@ -123,10 +134,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if is_dead:
 		return
 	if event is InputEventMouseMotion:
-		rotation_degrees.y -= event.relative.x * 0.5
-		%Camera3D.rotation_degrees.x -= event.relative.y * 0.2
-		%Camera3D.rotation_degrees.x = clamp(
-			%Camera3D.rotation_degrees.x, -80.0, 80.0
+		rotation_degrees.y -= event.relative.x * mouse_sensitivity
+		camera.rotation_degrees.x -= event.relative.y * mouse_sensitivity * VERTICAL_SENSITIVITY_RATIO
+		camera.rotation_degrees.x = clamp(
+			camera.rotation_degrees.x, -80.0, 80.0
 		)
 	elif event.is_action_pressed("ui_cancel"):
 		stop_repair_sound()
@@ -259,6 +270,7 @@ func shoot_bullet() -> void:
 	shoot_timer.start()
 	shoot_sound.play()
 	flash_muzzle()
+	shake_camera(0.08, 0.035)
 	shotgun.shoot()
 
 func _on_bullet_hit(body: Node3D) -> void:
@@ -312,12 +324,45 @@ func flash_muzzle() -> void:
 		0.1
 	)
 
+func set_mouse_sensitivity(value: float) -> void:
+	mouse_sensitivity = value
+
+func shake_camera(duration: float, strength: float) -> void:
+	if is_dead:
+		return
+
+	camera_shake_duration = max(camera_shake_duration, duration)
+	camera_shake_time = camera_shake_duration
+	camera_shake_strength = max(camera_shake_strength, strength)
+
+func update_camera_shake(delta: float) -> void:
+	if is_dead:
+		return
+
+	if camera_shake_time <= 0.0:
+		camera.position = camera_base_position
+		camera.rotation_degrees.z = 0.0
+		camera_shake_strength = 0.0
+		return
+
+	camera_shake_time = max(camera_shake_time - delta, 0.0)
+	var amount := camera_shake_time / camera_shake_duration
+	var offset := Vector3(
+		randf_range(-camera_shake_strength, camera_shake_strength),
+		randf_range(-camera_shake_strength, camera_shake_strength),
+		0.0
+	) * amount
+
+	camera.position = camera_base_position + offset
+	camera.rotation_degrees.z = randf_range(-2.0, 2.0) * amount
+
 func take_damage(amount: int) -> void:
 	if amount <= 0 or is_dead:
 		return
 
 	health = max(health - amount, 0)
 	hurt_sound.play()
+	shake_camera(0.18, 0.11)
 
 	if health == 0:
 		die()
@@ -351,8 +396,17 @@ func die() -> void:
 	print("Player died")
 	is_dead = true
 	stop_repair_sound()
+	play_death_camera_fall()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	died.emit()
+
+func play_death_camera_fall() -> void:
+	var tween := create_tween()
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tween.set_parallel(true)
+	tween.tween_property(camera, "position", Vector3(0.12, 0.18, 0.08), 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(camera, "rotation_degrees:x", 12.0, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(camera, "rotation_degrees:z", 88.0, 0.65).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 
 func start_reload() -> void:
 	if is_reloading:
