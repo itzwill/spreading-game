@@ -16,6 +16,8 @@ const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_setti
 @onready var hurt_sound: AudioStreamPlayer2D = $HurtSound
 @onready var collect_health_sound: AudioStreamPlayer2D = $CollectHealthSound
 @onready var collect_ammo_sound: AudioStreamPlayer2D = $CollectAmmoSound
+@onready var no_ammo_click_sound: AudioStreamPlayer2D = $NoAmmoClickSound
+@onready var repair_barrier_sound: AudioStreamPlayer2D = $RepairBarrierSound
 
 @onready var muzzle_light: SpotLight3D = %MuzzleLight
 
@@ -27,6 +29,7 @@ signal input_prompt_changed(prompt_id: String, visible: bool)
 signal temporary_input_prompt_requested(prompt_id: String)
 signal update_ammo(gun_ammo: int, reserve_ammo: int)
 signal update_health(hp: int)
+signal pause_requested
 signal died
 
 const FIRST_SHELL_DELAY := 0.4
@@ -39,6 +42,7 @@ var gun_ammo := 6
 var reserve_ammo := 38
 var is_dead := false
 var repair_prompt_visible := false
+var repair_sound_active := false
 
 func _ready() -> void:
 	ensure_gameplay_settings()
@@ -47,8 +51,14 @@ func _ready() -> void:
 	reserve_ammo = gameplay_settings.shotgun_max_reserve_ammo
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	add_to_group("player")
+	setup_looping_sounds()
 	call_deferred("emit_health_update")
 	call_deferred("emit_ammo_update")
+
+func setup_looping_sounds() -> void:
+	if repair_barrier_sound.stream is AudioStreamWAV:
+		repair_barrier_sound.stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	repair_barrier_sound.finished.connect(_on_repair_barrier_sound_finished)
 
 func emit_health_update() -> void:
 	update_health.emit(health)
@@ -93,11 +103,18 @@ func _physics_process(delta: float) -> void:
 	var repairable_barrier = get_facing_repairable_barrier()
 	set_repair_prompt_visible(repairable_barrier != null)
 
-	if Input.is_action_pressed("repair") and repairable_barrier:
+	var is_repairing := Input.is_action_pressed("repair") and repairable_barrier != null
+	if is_repairing:
 		repairable_barrier.repair(gameplay_settings.barrier_repair_rate * delta)
+		start_repair_sound()
+	else:
+		stop_repair_sound()
 	
 	if Input.is_action_just_pressed("shoot") and should_prompt_reload():
 		temporary_input_prompt_requested.emit("reload")
+
+	if Input.is_action_just_pressed("shoot") and gun_ammo == 0:
+		play_no_ammo_click()
 
 	if Input.is_action_pressed("shoot") and shoot_timer.is_stopped():
 		shoot_bullet()
@@ -112,6 +129,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			%Camera3D.rotation_degrees.x, -80.0, 80.0
 		)
 	elif event.is_action_pressed("ui_cancel"):
+		stop_repair_sound()
+		pause_requested.emit()
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	elif event.is_action_pressed("reload"):
 		start_reload()
@@ -249,6 +268,24 @@ func _on_bullet_hit(body: Node3D) -> void:
 
 func play_hitmarker_sound() -> void:
 	hitmarker_sound.play()
+
+func play_no_ammo_click() -> void:
+	no_ammo_click_sound.play()
+
+func start_repair_sound() -> void:
+	repair_sound_active = true
+	if not repair_barrier_sound.playing:
+		repair_barrier_sound.stream_paused = false
+		repair_barrier_sound.play()
+
+func stop_repair_sound() -> void:
+	repair_sound_active = false
+	if repair_barrier_sound.playing:
+		repair_barrier_sound.stop()
+
+func _on_repair_barrier_sound_finished() -> void:
+	if repair_sound_active:
+		repair_barrier_sound.play()
 	
 func flash_muzzle() -> void:
 	if muzzle_light_tween:
@@ -313,6 +350,7 @@ func die() -> void:
 
 	print("Player died")
 	is_dead = true
+	stop_repair_sound()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	died.emit()
 

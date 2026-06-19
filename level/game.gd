@@ -17,6 +17,7 @@ func _ready() -> void:
 	connect_existing_mobs()
 	label.visible = false
 	hud.start_game_requested.connect(start_game)
+	hud.resume_game_requested.connect(resume_game)
 	hud.retry_requested.connect(retry_game)
 	hud.main_menu_requested.connect(return_to_main_menu)
 	hud.set_score(player_score)
@@ -67,6 +68,19 @@ func show_main_menu() -> void:
 func start_game() -> void:
 	get_tree().paused = false
 	hud.hide_main_menu()
+	hud.hide_pause_menu()
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func pause_game() -> void:
+	if get_tree().paused:
+		return
+
+	get_tree().paused = true
+	hud.show_pause_menu()
+
+func resume_game() -> void:
+	get_tree().paused = false
+	hud.hide_pause_menu()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func retry_game() -> void:
@@ -95,6 +109,9 @@ func _on_player_input_prompt_changed(prompt_id: String, visible: bool) -> void:
 
 func _on_player_temporary_input_prompt_requested(prompt_id: String) -> void:
 	hud.show_temporary_input_prompt(prompt_id)
+
+func _on_player_pause_requested() -> void:
+	pause_game()
 
 func _on_player_died() -> void:
 	hud.game_over(player_score)

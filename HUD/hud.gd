@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 signal start_game_requested
+signal resume_game_requested
 signal retry_requested
 signal main_menu_requested
 
@@ -33,6 +34,7 @@ const INPUT_PROMPTS := {
 var persistent_prompt_id := ""
 var temporary_prompt_id := ""
 var menu_overlay: Control
+var pause_overlay: Control
 var game_over_overlay: Control
 var game_over_score_label: Label
 var score_value_label: Label
@@ -43,6 +45,7 @@ func _ready() -> void:
 	game_over_menu.visible = false
 	build_score_counter()
 	build_main_menu()
+	build_pause_menu()
 	build_game_over_menu()
 
 func set_ammo(current: int, reserve_ammo: int) -> void:
@@ -108,6 +111,7 @@ func refresh_input_prompt() -> void:
 
 func show_main_menu() -> void:
 	menu_overlay.visible = true
+	pause_overlay.visible = false
 	game_over_overlay.visible = false
 	game_hud.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -116,8 +120,18 @@ func hide_main_menu() -> void:
 	menu_overlay.visible = false
 	game_hud.visible = true
 
+func show_pause_menu() -> void:
+	pause_overlay.visible = true
+	game_hud.visible = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func hide_pause_menu() -> void:
+	pause_overlay.visible = false
+	game_hud.visible = true
+
 func game_over(score: int) -> void:
 	game_over_score_label.text = str(score)
+	pause_overlay.visible = false
 	game_over_overlay.visible = true
 	game_over_menu.visible = false
 	game_hud.visible = false
@@ -197,6 +211,26 @@ func build_main_menu() -> void:
 	start_button.pressed.connect(func(): start_game_requested.emit())
 	panel.add_child(start_button)
 
+func build_pause_menu() -> void:
+	pause_overlay = make_overlay("PauseOverlay", Color(0.005, 0.008, 0.012, 0.62))
+	pause_overlay.visible = false
+	add_child(pause_overlay)
+
+	var panel := make_menu_panel()
+	panel.offset_top = -180.0
+	panel.offset_bottom = 180.0
+	pause_overlay.add_child(panel)
+
+	var title := Label.new()
+	title.text = "Paused"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.label_settings = make_label_settings(64, 8)
+	panel.add_child(title)
+
+	var resume_button := make_menu_button("Resume")
+	resume_button.pressed.connect(func(): resume_game_requested.emit())
+	panel.add_child(resume_button)
+
 func build_game_over_menu() -> void:
 	game_over_overlay = make_overlay("GameOverOverlay")
 	game_over_overlay.visible = false
@@ -238,14 +272,14 @@ func build_game_over_menu() -> void:
 	menu_button.pressed.connect(func(): main_menu_requested.emit())
 	buttons.add_child(menu_button)
 
-func make_overlay(node_name: String) -> Control:
+func make_overlay(node_name: String, background_color := Color(0.005, 0.008, 0.012, 0.86)) -> Control:
 	var overlay := Control.new()
 	overlay.name = node_name
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var background := ColorRect.new()
-	background.color = Color(0.005, 0.008, 0.012, 0.86)
+	background.color = background_color
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.add_child(background)
 

@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://dp7sxe5xl5shk"]
 
-[ext_resource type="Texture2D" uid="uid://c05t3gt5fqhia" path="res://level/checkboard.png" id="1_cig4d"]
 [ext_resource type="Script" uid="uid://dxw83wqp7y44f" path="res://level/game.gd" id="1_q5axl"]
 [ext_resource type="PackedScene" uid="uid://bce7fqead43d2" path="res://player/player.tscn" id="2_bc4qa"]
 [ext_resource type="Script" uid="uid://pf8dm5sd3tj" path="res://gameplay/gameplay_settings.gd" id="2_parii"]
@@ -12,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://d3sr78vbrxhg1" path="res://level/world-objects/barrier.tscn" id="7_70jqb"]
 [ext_resource type="PackedScene" uid="uid://bxbkqqtuq4e8a" path="res://mob/navigating_mob.tscn" id="7_c45uj"]
 [ext_resource type="PackedScene" uid="uid://cnvnyl05rhhve" path="res://HUD/HUD.tscn" id="8_70jqb"]
+[ext_resource type="Texture2D" uid="uid://ccthotilnkhjx" path="res://textures/dirt.png" id="10_7ybyk"]
 [ext_resource type="PackedScene" path="res://level/items/health_box_collectible.tscn" id="11_health"]
 [ext_resource type="PackedScene" path="res://level/items/shotgun_ammo_collectible.tscn" id="12_ammo"]
 [ext_resource type="Script" uid="uid://d22vtxpleijl3" path="res://level/items/item_spawn_manager.gd" id="13_spawn_manager"]
@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://ce74cvasi7wca" path="res://level/items/item_spawn_area.gd" id="18_spawn_area"]
 [ext_resource type="ArrayMesh" uid="uid://cekmkhoe5ihuc" path="res://level/scenery/pine/pine_mesh.tres" id="20_parii"]
 [ext_resource type="Script" uid="uid://bln373m88m0qr" path="res://level/tree_multimesh.gd" id="21_7ybyk"]
+[ext_resource type="PackedScene" uid="uid://djchf6mlvgt8k" path="res://level/scenery/lantern/lantern.tscn" id="21_56qyu"]
 
 [sub_resource type="Resource" id="Resource_7ybyk"]
 script = ExtResource("2_parii")
@@ -37,8 +38,8 @@ vertices = PackedVector3Array(-43.750977, 6, -9.902344, -10.750977, 6, -9.902344
 polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(2, 0, 3), PackedInt32Array(3, 0, 4), PackedInt32Array(6, 5, 7), PackedInt32Array(7, 5, 8), PackedInt32Array(8, 5, 3), PackedInt32Array(8, 3, 9), PackedInt32Array(5, 2, 3), PackedInt32Array(9, 10, 8), PackedInt32Array(11, 10, 12), PackedInt32Array(12, 10, 9), PackedInt32Array(12, 9, 13), PackedInt32Array(14, 17, 15), PackedInt32Array(15, 17, 16), PackedInt32Array(19, 18, 20), PackedInt32Array(20, 18, 21), PackedInt32Array(18, 23, 22), PackedInt32Array(24, 21, 18), PackedInt32Array(26, 25, 27), PackedInt32Array(27, 25, 22), PackedInt32Array(25, 16, 22), PackedInt32Array(22, 16, 18), PackedInt32Array(18, 16, 28), PackedInt32Array(18, 28, 24), PackedInt32Array(7, 24, 6), PackedInt32Array(6, 24, 28), PackedInt32Array(16, 17, 28), PackedInt32Array(24, 29, 21), PackedInt32Array(17, 30, 28), PackedInt32Array(25, 31, 16), PackedInt32Array(15, 32, 14), PackedInt32Array(14, 32, 33), PackedInt32Array(33, 32, 0), PackedInt32Array(0, 32, 34), PackedInt32Array(32, 35, 34), PackedInt32Array(0, 1, 33), PackedInt32Array(20, 38, 19), PackedInt32Array(19, 38, 36), PackedInt32Array(36, 38, 12), PackedInt32Array(36, 12, 37), PackedInt32Array(37, 39, 36), PackedInt32Array(38, 11, 12), PackedInt32Array(35, 40, 34), PackedInt32Array(34, 40, 42), PackedInt32Array(34, 42, 41), PackedInt32Array(39, 37, 43), PackedInt32Array(43, 37, 44), PackedInt32Array(44, 37, 45), PackedInt32Array(27, 46, 26), PackedInt32Array(26, 46, 47), PackedInt32Array(47, 46, 44), PackedInt32Array(47, 44, 42), PackedInt32Array(42, 40, 47), PackedInt32Array(46, 43, 44)]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pixig"]
-albedo_color = Color(0.286275, 0.682353, 0.427451, 1)
-albedo_texture = ExtResource("1_cig4d")
+albedo_color = Color(0.84432447, 0.99441653, 0.8318976, 1)
+albedo_texture = ExtResource("10_7ybyk")
 uv1_triplanar = true
 uv1_triplanar_sharpness = 4.0
 
@@ -95,9 +96,6 @@ offset_right = 130.0
 offset_bottom = 68.0
 text = "Score: 0"
 label_settings = SubResource("LabelSettings_vca4y")
-
-[node name="NavigatingMob" parent="." unique_id=1587897704 instance=ExtResource("7_c45uj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0.4864576, 3)
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=2082530968]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0011386871, -5, -0.0033011436)
@@ -273,9 +271,24 @@ multimesh = SubResource("MultiMesh_parii")
 script = ExtResource("21_7ybyk")
 radius = 14.0
 
+[node name="Lanterns" type="Node3D" parent="." unique_id=363759404]
+
+[node name="Lantern" parent="Lanterns" unique_id=25614545 instance=ExtResource("21_56qyu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.820778, 0.5, 8.523029)
+
+[node name="Lantern2" parent="Lanterns" unique_id=1746751887 instance=ExtResource("21_56qyu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.902962, 0.5, 8.523029)
+
+[node name="Lantern3" parent="Lanterns" unique_id=1442107803 instance=ExtResource("21_56qyu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.820778, 0.5, -8.551355)
+
+[node name="Lantern4" parent="Lanterns" unique_id=1715195225 instance=ExtResource("21_56qyu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.902962, 0.5, -8.551355)
+
 [connection signal="died" from="Player" to="." method="_on_player_died"]
 [connection signal="hit_confirmed" from="Player" to="." method="_on_player_hit_confirmed"]
 [connection signal="input_prompt_changed" from="Player" to="." method="_on_player_input_prompt_changed"]
+[connection signal="pause_requested" from="Player" to="." method="_on_player_pause_requested"]
 [connection signal="temporary_input_prompt_requested" from="Player" to="." method="_on_player_temporary_input_prompt_requested"]
 [connection signal="update_ammo" from="Player" to="." method="_on_player_update_ammo"]
 [connection signal="update_health" from="Player" to="." method="_on_player_update_health"]

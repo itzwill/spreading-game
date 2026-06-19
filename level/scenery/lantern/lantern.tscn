@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://djchf6mlvgt8k"]
+
+[ext_resource type="PackedScene" uid="uid://br3n85ww3fki1" path="res://level/scenery/lantern/lantern.glb" id="1_hehlh"]
+
+[node name="Lantern" type="Node3D" unique_id=25614545]
+
+[node name="Root Scene" parent="." unique_id=820301284 instance=ExtResource("1_hehlh")]
+transform = Transform3D(0.64, 0, 0, 0, 0.64, 0, 0, 0, 0.64, 0, 0, 0)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1675855857]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2525219, 0)
+light_color = Color(0.96833915, 0.6204656, 0.098426394, 1)
