@@ -52,6 +52,9 @@ func set_hp(current: int) -> void:
 	health_bar.value = current
 	hp_label.text = str(current) + " HP"
 
+func set_max_hp(max_hp: int) -> void:
+	health_bar.max_value = max_hp
+
 func show_hitmarker() -> void:
 	hitmarker.visible = true
 	hitmarker_timer.start()

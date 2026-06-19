@@ -2,6 +2,10 @@ extends CharacterBody3D
 
 signal died
 
+const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_settings.tres")
+
+@export var gameplay_settings: Resource
+
 @onready var navigation_agent: NavigationAgent3D = %NavigationAgent3D
 @onready var player: CharacterBody3D = get_node("/root/Game/Player")
 @onready var zombie_model: Node3D = %ZombieModel
@@ -12,19 +16,21 @@ signal died
 @onready var attack_timer: Timer = %AttackTimer
 @onready var forward_ray: RayCast3D = %ForwardRay
 
-const SPEED = 2.5
-const MAX_SPEED = 5
-
-const MAX_HEALTH := 100
-
-const ATTACK_RANGE := 1.5
-const ATTACK_DAMAGE := 10
-
-var health := MAX_HEALTH
+var health := 100
 var move_direction := Vector3.FORWARD
 
 func _ready() -> void:
+	ensure_gameplay_settings()
+	health = gameplay_settings.zombie_max_health
 	add_to_group("damageable")
+
+func ensure_gameplay_settings() -> void:
+	if gameplay_settings == null:
+		gameplay_settings = DEFAULT_GAMEPLAY_SETTINGS
+
+func set_gameplay_settings(settings: Resource) -> void:
+	gameplay_settings = settings if settings else DEFAULT_GAMEPLAY_SETTINGS
+	health = gameplay_settings.zombie_max_health
 
 func _physics_process(_delta: float) -> void:
 
@@ -45,11 +51,11 @@ func _physics_process(_delta: float) -> void:
 		move_and_slide()
 		return
 
-	var new_velocity = direction * SPEED
+	var new_velocity = direction * gameplay_settings.zombie_move_speed
 	zombie_model.rotation.y = Vector3.BACK.signed_angle_to(direction, Vector3.UP)
 	
 	var horizontal_speed = Vector2(new_velocity.x, new_velocity.z).length()
-	var blend_value = clamp(horizontal_speed / MAX_SPEED, 0.0, 1.0)
+	var blend_value = clamp(horizontal_speed / gameplay_settings.zombie_animation_max_speed, 0.0, 1.0)
 	animation_tree.set("parameters/locomotion/blend_position", blend_value)
 
 	if navigation_agent.avoidance_enabled:
@@ -70,7 +76,7 @@ func set_target_to_player() -> void:
 func can_attack_player() -> bool:
 	return global_position.distance_to(
 		player.global_position
-	) <= ATTACK_RANGE
+	) <= gameplay_settings.zombie_attack_range
 
 func attack_player() -> void:
 	velocity = Vector3.ZERO
@@ -78,7 +84,7 @@ func attack_player() -> void:
 	if not attack_timer.is_stopped():
 		return
 
-	player.take_damage(ATTACK_DAMAGE)
+	player.take_damage(gameplay_settings.zombie_player_damage)
 	animate_attack()
 
 	attack_timer.start()
@@ -97,7 +103,7 @@ func get_facing_barrier() -> Node:
 	var origin := global_position + Vector3.UP * 0.65
 	var query := PhysicsRayQueryParameters3D.create(
 		origin,
-		origin + move_direction * ATTACK_RANGE
+		origin + move_direction * gameplay_settings.zombie_attack_range
 	)
 
 	query.exclude = [self]
@@ -127,7 +133,7 @@ func attack_barrier() -> void:
 	var barrier = get_facing_barrier()
 
 	if barrier:
-		barrier.take_barrier_damage(25)
+		barrier.take_barrier_damage(gameplay_settings.zombie_barrier_damage)
 		animate_attack()
 
 	attack_timer.start()
@@ -170,30 +176,30 @@ func calculate_damage(
 	distance: float
 ) -> int:
 
-	var damage := 20.0
+	var damage: float = gameplay_settings.shotgun_base_damage
 
 	match hit_location:
 		"head":
-			damage *= 2.0
+			damage *= gameplay_settings.shotgun_headshot_multiplier
 
 		"body":
-			damage *= 1.0
+			damage *= gameplay_settings.shotgun_body_multiplier
 
 	# Shotgun damage falloff
 	var distance_factor = clamp(
-		distance / 40.0,
+		distance / gameplay_settings.shotgun_falloff_distance,
 		0.0,
 		1.0
 	)
 
 	damage *= lerpf(
 		1.0,
-		0.5,
+		gameplay_settings.shotgun_min_falloff_multiplier,
 		distance_factor
 	)
 
-	# Random ±10%
-	damage *= randf_range(0.9, 1.1)
+	var randomness: float = gameplay_settings.shotgun_damage_randomness
+	damage *= randf_range(1.0 - randomness, 1.0 + randomness)
 
 	return roundi(damage)
 

@@ -1,8 +1,11 @@
 extends CharacterBody3D
 
+const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_settings.tres")
+
 @export var reload_start_sound: AudioStream
 @export var insert_shell_sound: AudioStream
 @export var reload_end_sound: AudioStream
+@export var gameplay_settings: Resource
 
 @onready var shoot_timer: Timer = %ShootTimer
 @onready var reload_timer: Timer = $ReloadTimer
@@ -23,31 +26,41 @@ signal update_ammo(gun_ammo: int, reserve_ammo: int)
 signal update_health(hp: int)
 signal died
 
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
-const MAX_HEALTH := 100
-const SHOTGUN_PELLETS := 5
-const SHOTGUN_SPREAD := 4.0 # degrees
-const REPAIR_RANGE := 3.0
-const REPAIR_RATE := 25.0
-
 const FIRST_SHELL_DELAY := 0.4
 const SHELL_INSERT_DELAY := 0.37
-const MAX_GUN_AMMO := 6
-const MAX_RESERVE_AMMO := 38
 
 var is_reloading := false
 var muzzle_light_tween: Tween
-var health := MAX_HEALTH
-var gun_ammo: int = MAX_GUN_AMMO
-var reserve_ammo: int = MAX_RESERVE_AMMO
+var health := 100
+var gun_ammo := 6
+var reserve_ammo := 38
 var is_dead := false
 var repair_prompt_visible := false
 
 func _ready() -> void:
+	ensure_gameplay_settings()
+	health = gameplay_settings.player_max_health
+	gun_ammo = gameplay_settings.shotgun_max_gun_ammo
+	reserve_ammo = gameplay_settings.shotgun_max_reserve_ammo
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	add_to_group("player")
+	call_deferred("emit_health_update")
 	call_deferred("emit_ammo_update")
+
+func emit_health_update() -> void:
+	update_health.emit(health)
+
+func ensure_gameplay_settings() -> void:
+	if gameplay_settings == null:
+		gameplay_settings = DEFAULT_GAMEPLAY_SETTINGS
+
+func set_gameplay_settings(settings: Resource) -> void:
+	gameplay_settings = settings if settings else DEFAULT_GAMEPLAY_SETTINGS
+	health = gameplay_settings.player_max_health
+	gun_ammo = gameplay_settings.shotgun_max_gun_ammo
+	reserve_ammo = gameplay_settings.shotgun_max_reserve_ammo
+	update_health.emit(health)
+	emit_ammo_update()
 
 func emit_ammo_update() -> void:
 	update_ammo.emit(gun_ammo, reserve_ammo)
@@ -61,16 +74,16 @@ func _physics_process(delta: float) -> void:
 
 	# Handle jump.
 	if Input.is_action_just_pressed("move_jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = gameplay_settings.player_jump_velocity
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
-		velocity.x = direction.x * SPEED
-		velocity.z = direction.z * SPEED
+		velocity.x = direction.x * gameplay_settings.player_move_speed
+		velocity.z = direction.z * gameplay_settings.player_move_speed
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		velocity.z = move_toward(velocity.z, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, gameplay_settings.player_move_speed)
+		velocity.z = move_toward(velocity.z, 0, gameplay_settings.player_move_speed)
 
 	move_and_slide()
 	
@@ -78,7 +91,7 @@ func _physics_process(delta: float) -> void:
 	set_repair_prompt_visible(repairable_barrier != null)
 
 	if Input.is_action_pressed("repair") and repairable_barrier:
-		repairable_barrier.repair(REPAIR_RATE * delta)
+		repairable_barrier.repair(gameplay_settings.barrier_repair_rate * delta)
 	
 	if Input.is_action_just_pressed("shoot") and should_prompt_reload():
 		temporary_input_prompt_requested.emit("reload")
@@ -109,15 +122,7 @@ func get_aim_direction() -> Vector3:
 	var origin = camera.project_ray_origin(screen_center)
 	var direction = camera.project_ray_normal(screen_center)
 
-	var query = PhysicsRayQueryParameters3D.create(
-		origin,
-		origin + direction * 1000.0
-	)
-
-	query.exclude = [self]
-	query.collision_mask = 1
-
-	var result = get_world_3d().direct_space_state.intersect_ray(query)
+	var result = get_first_non_barrier_ray_hit(origin, direction, 1000.0)
 
 	var target_position: Vector3
 
@@ -133,7 +138,7 @@ func repair_facing_barrier(delta: float) -> void:
 	if barrier == null:
 		return
 
-	barrier.repair(REPAIR_RATE * delta)
+	barrier.repair(gameplay_settings.barrier_repair_rate * delta)
 
 func get_facing_repairable_barrier() -> Node:
 	var barrier = get_facing_barrier()
@@ -153,7 +158,7 @@ func get_facing_barrier() -> Node:
 	var direction = camera.project_ray_normal(screen_center)
 	var query = PhysicsRayQueryParameters3D.create(
 		origin,
-		origin + direction * REPAIR_RANGE
+		origin + direction * gameplay_settings.barrier_repair_range
 	)
 
 	query.exclude = [self]
@@ -198,7 +203,7 @@ func shoot_bullet() -> void:
 
 	var base_direction = get_aim_direction()
 
-	for i in SHOTGUN_PELLETS:
+	for i in gameplay_settings.shotgun_pellets:
 		var bullet = BULLET.instantiate()
 
 		bullet.hit.connect(_on_bullet_hit)
@@ -212,16 +217,16 @@ func shoot_bullet() -> void:
 		spread_basis = spread_basis.rotated(
 			Vector3.UP,
 			deg_to_rad(randf_range(
-				-SHOTGUN_SPREAD,
-				SHOTGUN_SPREAD
+				-gameplay_settings.shotgun_spread_degrees,
+				gameplay_settings.shotgun_spread_degrees
 			))
 		)
 
 		spread_basis = spread_basis.rotated(
 			Vector3.RIGHT,
 			deg_to_rad(randf_range(
-				-SHOTGUN_SPREAD,
-				SHOTGUN_SPREAD
+				-gameplay_settings.shotgun_spread_degrees,
+				gameplay_settings.shotgun_spread_degrees
 			))
 		)
 
@@ -276,19 +281,19 @@ func take_damage(amount: int) -> void:
 	print("Player health:", health)
 
 func add_health(amount: int) -> bool:
-	if health >= MAX_HEALTH:
+	if health >= gameplay_settings.player_max_health:
 		return false
 
-	health = min(health + amount, MAX_HEALTH)
+	health = min(health + amount, gameplay_settings.player_max_health)
 	update_health.emit(health)
 	print("Player health:", health)
 	return true
 
 func add_reserve_ammo(amount: int) -> bool:
-	if reserve_ammo >= MAX_RESERVE_AMMO:
+	if reserve_ammo >= gameplay_settings.shotgun_max_reserve_ammo:
 		return false
 
-	reserve_ammo = min(reserve_ammo + amount, MAX_RESERVE_AMMO)
+	reserve_ammo = min(reserve_ammo + amount, gameplay_settings.shotgun_max_reserve_ammo)
 	emit_ammo_update()
 	return true
 
@@ -305,7 +310,7 @@ func start_reload() -> void:
 	if is_reloading:
 		return
 
-	if gun_ammo >= MAX_GUN_AMMO:
+	if gun_ammo >= gameplay_settings.shotgun_max_gun_ammo:
 		return
 
 	if reserve_ammo <= 0:
@@ -322,7 +327,7 @@ func _on_reload_timer_timeout() -> void:
 	if not is_reloading:
 		return
 
-	if gun_ammo >= MAX_GUN_AMMO:
+	if gun_ammo >= gameplay_settings.shotgun_max_gun_ammo:
 		finish_reload()
 		return
 
@@ -338,7 +343,7 @@ func _on_reload_timer_timeout() -> void:
 	reload_sound.stream = insert_shell_sound
 	reload_sound.play()
 
-	if gun_ammo < MAX_GUN_AMMO and reserve_ammo > 0:
+	if gun_ammo < gameplay_settings.shotgun_max_gun_ammo and reserve_ammo > 0:
 		reload_timer.start(SHELL_INSERT_DELAY)
 	else:
 		finish_reload()
@@ -352,3 +357,27 @@ func cancel_reload() -> void:
 	is_reloading = false
 	reload_timer.stop()
 	reload_sound.stop()
+
+func get_first_non_barrier_ray_hit(origin: Vector3, ray_direction: Vector3, distance: float) -> Dictionary:
+	var space_state := get_world_3d().direct_space_state
+	var cast_from := origin
+	var cast_to := origin + ray_direction * distance
+	var excluded := [self]
+
+	for i in 8:
+		var query := PhysicsRayQueryParameters3D.create(cast_from, cast_to)
+		query.exclude = excluded
+		query.collision_mask = 1
+
+		var result := space_state.intersect_ray(query)
+		if result.is_empty():
+			return {}
+
+		if find_barrier(result.collider):
+			excluded.append(result.collider)
+			cast_from = result.position + ray_direction * 0.01
+			continue
+
+		return result
+
+	return {}
