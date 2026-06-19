@@ -183,8 +183,8 @@ func build_main_menu() -> void:
 		preload("res://HUD/inputs/keyboard_w.png"),
 		preload("res://HUD/inputs/keyboard_a.png"),
 		preload("res://HUD/inputs/keyboard_s.png"),
+		preload("res://HUD/inputs/keyboard_d.png"),
 	])
-	add_text_key_control_row(guide, "Move right", "D")
 	add_control_row(guide, "Look", [preload("res://HUD/inputs/mouse_move.png")])
 	add_control_row(guide, "Fire", [preload("res://HUD/inputs/mouse_left.png")])
 	add_control_row(guide, "Reload", [preload("res://HUD/inputs/keyboard_r.png")])

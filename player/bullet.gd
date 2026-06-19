@@ -17,6 +17,7 @@ func _physics_process(delta: float) -> void:
 	)
 
 	query.exclude = [self]
+	query.collision_mask = 1
 
 	var result := get_world_3d().direct_space_state.intersect_ray(query)
 

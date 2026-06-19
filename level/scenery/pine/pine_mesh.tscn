@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bvctosaxgwhlt"]
+
+[ext_resource type="ArrayMesh" uid="uid://cekmkhoe5ihuc" path="res://level/scenery/pine/pine_mesh.tres" id="1_opts2"]
+
+[node name="PineMesh" type="MeshInstance3D" unique_id=1671404424]
+transform = Transform3D(1, 0, 0, 0, 1, -1.6292067e-07, 0, 1.6292067e-07, 1, 0, 0, 0)
+cast_shadow = 0
+mesh = ExtResource("1_opts2")

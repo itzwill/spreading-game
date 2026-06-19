@@ -11,15 +11,20 @@ extends Node3D
 @export var spawn_attempts := 8
 @export var ground_probe_height := 12.0
 @export var ground_probe_depth := 40.0
+@export var spawn_area_path: NodePath
 
 @onready var spawn_timer: Timer = %SpawnTimer
 
 var player: Node3D
+var spawn_area: Node
 var health_boxes: Array[Node] = []
 var shotgun_ammo_boxes: Array[Node] = []
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player") as Node3D
+	if not spawn_area_path.is_empty():
+		spawn_area = get_node_or_null(spawn_area_path)
+
 	spawn_timer.timeout.connect(_on_spawn_timer_timeout)
 	schedule_next_spawn()
 
@@ -59,6 +64,9 @@ func try_spawn_random_item() -> void:
 		shotgun_ammo_boxes.append(item)
 
 func find_spawn_position() -> Variant:
+	if spawn_area and spawn_area.has_method("get_random_ground_position"):
+		return spawn_area.get_random_ground_position(spawn_attempts)
+
 	if not player:
 		player = get_tree().get_first_node_in_group("player") as Node3D
 		if not player:
@@ -73,6 +81,7 @@ func find_spawn_position() -> Variant:
 			probe_origin,
 			probe_origin + Vector3.DOWN * ground_probe_depth
 		)
+		query.collision_mask = 1
 		var result := get_world_3d().direct_space_state.intersect_ray(query)
 
 		if result:

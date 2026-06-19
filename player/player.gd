@@ -115,6 +115,7 @@ func get_aim_direction() -> Vector3:
 	)
 
 	query.exclude = [self]
+	query.collision_mask = 1
 
 	var result = get_world_3d().direct_space_state.intersect_ray(query)
 
@@ -156,6 +157,7 @@ func get_facing_barrier() -> Node:
 	)
 
 	query.exclude = [self]
+	query.collision_mask = 1
 	query.collide_with_areas = true
 
 	var result = get_world_3d().direct_space_state.intersect_ray(query)

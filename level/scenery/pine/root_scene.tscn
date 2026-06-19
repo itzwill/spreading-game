@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://srbqaixmicbu"]
+
+[ext_resource type="PackedScene" uid="uid://d3bm5pvxqfpqd" path="res://level/scenery/pine/pine.glb" id="1_ehb28"]
+
+[node name="Root Scene" unique_id=1590902356 instance=ExtResource("1_ehb28")]

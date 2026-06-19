@@ -21,6 +21,7 @@ const ATTACK_RANGE := 1.5
 const ATTACK_DAMAGE := 10
 
 var health := MAX_HEALTH
+var move_direction := Vector3.FORWARD
 
 func _ready() -> void:
 	add_to_group("damageable")
@@ -32,15 +33,17 @@ func _physics_process(_delta: float) -> void:
 		move_and_slide()
 		return
 
+	var next_path_position = navigation_agent.get_next_path_position()
+	var direction = global_position.direction_to(next_path_position)
+	direction.y = 0.0
+	direction = direction.normalized()
+	if direction:
+		move_direction = direction
+
 	if can_attack_barrier():
 		attack_barrier()
 		move_and_slide()
 		return
-
-	var next_path_position = navigation_agent.get_next_path_position()
-
-	var direction = global_position.direction_to(next_path_position)
-	direction.y = 0.0
 
 	var new_velocity = direction * SPEED
 	zombie_model.rotation.y = Vector3.BACK.signed_angle_to(direction, Vector3.UP)
@@ -81,10 +84,7 @@ func attack_player() -> void:
 	attack_timer.start()
 
 func can_attack_barrier() -> bool:
-	if not forward_ray.is_colliding():
-		return false
-
-	var barrier = find_barrier(forward_ray.get_collider())
+	var barrier = get_facing_barrier()
 	if barrier:
 		if barrier.has_method("is_blocking"):
 			return barrier.is_blocking()
@@ -92,6 +92,22 @@ func can_attack_barrier() -> bool:
 		return true
 
 	return false
+
+func get_facing_barrier() -> Node:
+	var origin := global_position + Vector3.UP * 0.65
+	var query := PhysicsRayQueryParameters3D.create(
+		origin,
+		origin + move_direction * ATTACK_RANGE
+	)
+
+	query.exclude = [self]
+	query.collision_mask = 1
+
+	var result := get_world_3d().direct_space_state.intersect_ray(query)
+	if not result:
+		return null
+
+	return find_barrier(result.collider)
 	
 func find_barrier(node: Node) -> Node:
 	while node:
@@ -108,7 +124,7 @@ func attack_barrier() -> void:
 	if not attack_timer.is_stopped():
 		return
 
-	var barrier = find_barrier(forward_ray.get_collider())
+	var barrier = get_facing_barrier()
 
 	if barrier:
 		barrier.take_barrier_damage(25)
