@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://c05t3gt5fqhia" path="res://level/checkboard.png" id="1_cig4d"]
 [ext_resource type="Script" uid="uid://dxw83wqp7y44f" path="res://level/game.gd" id="1_q5axl"]
 [ext_resource type="PackedScene" uid="uid://bce7fqead43d2" path="res://player/player.tscn" id="2_bc4qa"]
+[ext_resource type="Script" uid="uid://pf8dm5sd3tj" path="res://gameplay/gameplay_settings.gd" id="2_parii"]
 [ext_resource type="Environment" uid="uid://c1y7p6h4tuh61" path="res://world-environments/game_environment.tres" id="2_q5axl"]
 [ext_resource type="AudioStream" uid="uid://dxl5ceyyv4fxc" path="res://sounds/player/reload/reload_start.wav" id="4_sptj5"]
 [ext_resource type="PackedScene" uid="uid://dtrg33yu34hnv" path="res://mob/mob_spawner.tscn" id="4_vca4y"]
@@ -19,6 +20,12 @@
 [ext_resource type="Script" uid="uid://ce74cvasi7wca" path="res://level/items/item_spawn_area.gd" id="18_spawn_area"]
 [ext_resource type="ArrayMesh" uid="uid://cekmkhoe5ihuc" path="res://level/scenery/pine/pine_mesh.tres" id="20_parii"]
 [ext_resource type="Script" uid="uid://bln373m88m0qr" path="res://level/tree_multimesh.gd" id="21_7ybyk"]
+
+[sub_resource type="Resource" id="Resource_7ybyk"]
+script = ExtResource("2_parii")
+zombie_player_damage = 20
+zombie_barrier_damage = 10
+metadata/_custom_type_script = "uid://pf8dm5sd3tj"
 
 [sub_resource type="LabelSettings" id="LabelSettings_vca4y"]
 font_size = 26
@@ -49,6 +56,7 @@ buffer = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 [node name="Game" type="Node3D" unique_id=1990066259]
 script = ExtResource("1_q5axl")
+gameplay_settings = SubResource("Resource_7ybyk")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=517525407]
 environment = ExtResource("2_q5axl")

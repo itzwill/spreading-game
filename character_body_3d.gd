@@ -3,8 +3,20 @@ extends CharacterBody3D
 signal died
 
 const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_settings.tres")
+const ZOMBIE_IDLE_SOUND = preload("res://sounds/mob/zombie-idle.wav")
+const BARRIER_HIT_SOUNDS: Array[AudioStream] = [
+	preload("res://sounds/mob/barrier-hit-1.wav"),
+	preload("res://sounds/mob/barrier-hit-2.wav"),
+	preload("res://sounds/mob/barrier-hit-3.wav"),
+]
 
 @export var gameplay_settings: Resource
+@export var idle_sound_min_interval := 4.0
+@export var idle_sound_max_interval := 9.0
+@export var idle_pitch_min := 0.92
+@export var idle_pitch_max := 1.08
+@export var barrier_hit_pitch_min := 0.94
+@export var barrier_hit_pitch_max := 1.06
 
 @onready var navigation_agent: NavigationAgent3D = %NavigationAgent3D
 @onready var player: CharacterBody3D = get_node("/root/Game/Player")
@@ -16,11 +28,17 @@ const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_setti
 @onready var attack_timer: Timer = %AttackTimer
 @onready var forward_ray: RayCast3D = %ForwardRay
 
+var idle_sound: AudioStreamPlayer3D
+var barrier_hit_sound: AudioStreamPlayer3D
+var idle_sound_timer: Timer
 var health := 100
 var move_direction := Vector3.FORWARD
+var is_dead := false
 
 func _ready() -> void:
 	ensure_gameplay_settings()
+	setup_audio_players()
+	setup_idle_sound_timer()
 	health = gameplay_settings.zombie_max_health
 	add_to_group("damageable")
 
@@ -134,6 +152,7 @@ func attack_barrier() -> void:
 
 	if barrier:
 		barrier.take_barrier_damage(gameplay_settings.zombie_barrier_damage)
+		play_barrier_hit_sound()
 		animate_attack()
 
 	attack_timer.start()
@@ -205,8 +224,57 @@ func calculate_damage(
 
 func animate_attack() -> void:
 	zombie_model.attack()
+
+func setup_audio_players() -> void:
+	idle_sound = get_node_or_null("IdleSound") as AudioStreamPlayer3D
+	if idle_sound == null:
+		idle_sound = AudioStreamPlayer3D.new()
+		idle_sound.name = "IdleSound"
+		idle_sound.stream = ZOMBIE_IDLE_SOUND
+		add_child(idle_sound)
+
+	barrier_hit_sound = get_node_or_null("BarrierHitSound") as AudioStreamPlayer3D
+	if barrier_hit_sound == null:
+		barrier_hit_sound = AudioStreamPlayer3D.new()
+		barrier_hit_sound.name = "BarrierHitSound"
+		add_child(barrier_hit_sound)
+
+func setup_idle_sound_timer() -> void:
+	idle_sound_timer = Timer.new()
+	idle_sound_timer.name = "IdleSoundTimer"
+	idle_sound_timer.one_shot = true
+	idle_sound_timer.timeout.connect(_on_idle_sound_timer_timeout)
+	add_child(idle_sound_timer)
+	schedule_idle_sound()
+
+func schedule_idle_sound() -> void:
+	if is_dead or idle_sound_timer == null:
+		return
+
+	idle_sound_timer.start(randf_range(idle_sound_min_interval, idle_sound_max_interval))
+
+func _on_idle_sound_timer_timeout() -> void:
+	if is_dead:
+		return
+
+	if idle_sound:
+		idle_sound.pitch_scale = randf_range(idle_pitch_min, idle_pitch_max)
+		idle_sound.play()
+
+	schedule_idle_sound()
+
+func play_barrier_hit_sound() -> void:
+	if barrier_hit_sound == null or BARRIER_HIT_SOUNDS.is_empty():
+		return
+
+	barrier_hit_sound.stream = BARRIER_HIT_SOUNDS.pick_random()
+	barrier_hit_sound.pitch_scale = randf_range(barrier_hit_pitch_min, barrier_hit_pitch_max)
+	barrier_hit_sound.play()
 	
 func die() -> void:
+	is_dead = true
+	if idle_sound_timer:
+		idle_sound_timer.stop()
 	death_sound.play()
 	set_physics_process(false)
 	zombie_model.die()

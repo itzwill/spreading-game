@@ -5,7 +5,12 @@
 [ext_resource type="AudioStream" uid="uid://csjnyhiae6kc" path="res://sounds/player/shoot.wav" id="5_qjkh3"]
 [ext_resource type="AudioStream" uid="uid://b6gcy0muo1o50" path="res://sounds/player/hitmarker.wav" id="6_boad6"]
 [ext_resource type="PackedScene" uid="uid://c8wbx8bnldkrw" path="res://player/shotgun/Shotgun_ShortStock.fbx" id="7_boad6"]
+[ext_resource type="AudioStream" uid="uid://c6248vccwns6s" path="res://sounds/player/collect-health.wav" id="7_rgyib"]
 [ext_resource type="AudioStream" uid="uid://j7v5h4wjekro" path="res://sounds/player/reload.wav" id="8_hg6s5"]
+[ext_resource type="AudioStream" uid="uid://b3knp2p5e432g" path="res://sounds/player/collect-ammo.wav" id="8_rgyib"]
+[ext_resource type="AudioStream" uid="uid://bsjrkxxpuaunl" path="res://sounds/player/no-ammo-click.wav" id="10_2ieo8"]
+[ext_resource type="AudioStream" uid="uid://dtbok4dvi26l8" path="res://sounds/player/repair-barrier.wav" id="10_8t03j"]
+[ext_resource type="AudioStream" uid="uid://bb38bk87be603" path="res://sounds/player/player-hurt.wav" id="10_hurt"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kqu6x"]
 
@@ -65,5 +70,20 @@ stream = ExtResource("6_boad6")
 [node name="ReloadSound" type="AudioStreamPlayer2D" parent="." unique_id=762033717]
 unique_name_in_owner = true
 stream = ExtResource("8_hg6s5")
+
+[node name="HurtSound" type="AudioStreamPlayer2D" parent="." unique_id=1570057920]
+stream = ExtResource("10_hurt")
+
+[node name="CollectHealthSound" type="AudioStreamPlayer2D" parent="." unique_id=1936814055]
+stream = ExtResource("7_rgyib")
+
+[node name="CollectAmmoSound" type="AudioStreamPlayer2D" parent="." unique_id=1857544829]
+stream = ExtResource("8_rgyib")
+
+[node name="NoAmmoClickSound" type="AudioStreamPlayer2D" parent="." unique_id=1137501738]
+stream = ExtResource("10_2ieo8")
+
+[node name="RepairBarrierSound" type="AudioStreamPlayer2D" parent="." unique_id=454469785]
+stream = ExtResource("10_8t03j")
 
 [connection signal="timeout" from="ReloadTimer" to="." method="_on_reload_timer_timeout"]

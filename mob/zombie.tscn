@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://ctfmbylc7xdkd" path="res://mob/zombie.gd" id="1_rj5bg"]
 [ext_resource type="AudioStream" uid="uid://ckef6bmkyukyp" path="res://sounds/mob/zombie_take_damage.wav" id="3_j5nxc"]
 [ext_resource type="AudioStream" uid="uid://76gyun7ely8v" path="res://sounds/mob/zombie_death.wav" id="4_evr81"]
+[ext_resource type="AudioStream" uid="uid://dt3e0krykumg4" path="res://sounds/mob/zombie-idle.wav" id="5_paj0p"]
+[ext_resource type="AudioStream" uid="uid://vkqao1djfnyu" path="res://sounds/mob/barrier-hit-1.wav" id="6_xr3xn"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_rj5bg"]
 
@@ -39,5 +41,11 @@ stream = ExtResource("3_j5nxc")
 [node name="DeathSound" type="AudioStreamPlayer3D" parent="." unique_id=829746005]
 unique_name_in_owner = true
 stream = ExtResource("4_evr81")
+
+[node name="IdleSound" type="AudioStreamPlayer3D" parent="." unique_id=354703874]
+stream = ExtResource("5_paj0p")
+
+[node name="BarrierHitSound" type="AudioStreamPlayer3D" parent="." unique_id=652802653]
+stream = ExtResource("6_xr3xn")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

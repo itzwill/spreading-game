@@ -13,6 +13,9 @@ const DEFAULT_GAMEPLAY_SETTINGS = preload("res://gameplay/default_gameplay_setti
 @onready var shoot_sound: AudioStreamPlayer2D = $ShootSound
 @onready var hitmarker_sound: AudioStreamPlayer2D = $HitmarkerSound
 @onready var reload_sound: AudioStreamPlayer2D = %ReloadSound
+@onready var hurt_sound: AudioStreamPlayer2D = $HurtSound
+@onready var collect_health_sound: AudioStreamPlayer2D = $CollectHealthSound
+@onready var collect_ammo_sound: AudioStreamPlayer2D = $CollectAmmoSound
 
 @onready var muzzle_light: SpotLight3D = %MuzzleLight
 
@@ -273,7 +276,12 @@ func flash_muzzle() -> void:
 	)
 
 func take_damage(amount: int) -> void:
+	if amount <= 0 or is_dead:
+		return
+
 	health = max(health - amount, 0)
+	hurt_sound.play()
+
 	if health == 0:
 		die()
 
@@ -286,6 +294,7 @@ func add_health(amount: int) -> bool:
 
 	health = min(health + amount, gameplay_settings.player_max_health)
 	update_health.emit(health)
+	collect_health_sound.play()
 	print("Player health:", health)
 	return true
 
@@ -295,6 +304,7 @@ func add_reserve_ammo(amount: int) -> bool:
 
 	reserve_ammo = min(reserve_ammo + amount, gameplay_settings.shotgun_max_reserve_ammo)
 	emit_ammo_update()
+	collect_ammo_sound.play()
 	return true
 
 func die() -> void:

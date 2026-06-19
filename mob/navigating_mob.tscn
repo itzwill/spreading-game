@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://biytq2fb3efoh" path="res://mob/zombie_model.tscn" id="2_aunh2"]
 [ext_resource type="AudioStream" uid="uid://ckef6bmkyukyp" path="res://sounds/mob/zombie_take_damage.wav" id="3_gnc3v"]
 [ext_resource type="AudioStream" uid="uid://76gyun7ely8v" path="res://sounds/mob/zombie_death.wav" id="4_j4mfc"]
+[ext_resource type="AudioStream" uid="uid://dt3e0krykumg4" path="res://sounds/mob/zombie-idle.wav" id="5_idle"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gnc3v"]
 
@@ -55,6 +56,11 @@ stream = ExtResource("3_gnc3v")
 [node name="DeathSound" type="AudioStreamPlayer3D" parent="." unique_id=1522521655]
 unique_name_in_owner = true
 stream = ExtResource("4_j4mfc")
+
+[node name="IdleSound" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("5_idle")
+
+[node name="BarrierHitSound" type="AudioStreamPlayer3D" parent="."]
 
 [connection signal="velocity_computed" from="NavigationAgent3D" to="." method="_on_navigation_agent_3d_velocity_computed"]
 [connection signal="timeout" from="NavigationTimer" to="." method="_on_navigation_timer_timeout"]
